@@ -1,0 +1,9 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+credentials.json
+credentials_temp.json
+.cache/
+output/backup/
