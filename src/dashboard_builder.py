@@ -25,31 +25,54 @@ TEMPLATE = """<!DOCTYPE html>
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body { background:#0f172a; color:#e2e8f0; font-family:sans-serif; }
-  .card { background:#1e293b; border-radius:12px; }
+  :root {
+    --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8;
+    --border: #334155; --input-bg: #0f172a; --hover: #334155;
+    --alert-bg: #7f1d1d; --alert-border: #ef4444;
+  }
+  :root[data-theme="light"] {
+    --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b;
+    --border: #e2e8f0; --input-bg: #ffffff; --hover: #f8fafc;
+    --alert-bg: #fee2e2; --alert-border: #ef4444;
+  }
+  body { background:var(--bg); color:var(--text); font-family:sans-serif; transition:background .2s,color .2s; }
+  .card { background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.12); }
   .accent { color:#f97316; }
-  .alert-banner { background:#7f1d1d; border:1px solid #ef4444; border-radius:8px; padding:12px 16px; margin-bottom:12px; }
+  .alert-banner { background:var(--alert-bg); border:1px solid var(--alert-border); border-radius:8px; padding:12px 16px; margin-bottom:12px; }
   .kpi-gauge { font-size:12px; padding:2px 8px; border-radius:9999px; font-weight:600; display:inline-block; }
   .gauge-green { background:#166534; color:#86efac; }
   .gauge-orange { background:#78350f; color:#fcd34d; }
   .gauge-red { background:#7f1d1d; color:#fca5a5; }
-  table.dataTable thead th { background:#0f172a !important; color:#94a3b8 !important; border-bottom:1px solid #334155 !important; }
-  table.dataTable tbody tr { background:#1e293b !important; }
-  table.dataTable tbody tr:hover { background:#334155 !important; }
-  table.dataTable tbody td { color:#e2e8f0 !important; border-color:#334155 !important; }
+  :root[data-theme="light"] .gauge-green { background:#dcfce7; color:#166534; }
+  :root[data-theme="light"] .gauge-orange { background:#ffedd5; color:#9a3412; }
+  :root[data-theme="light"] .gauge-red { background:#fee2e2; color:#991b1b; }
+  /* DataTables */
+  table.dataTable thead th { background:var(--bg) !important; color:var(--muted) !important; border-bottom:1px solid var(--border) !important; }
+  table.dataTable tbody tr { background:var(--card) !important; }
+  table.dataTable tbody tr:hover { background:var(--hover) !important; }
+  table.dataTable tbody td { color:var(--text) !important; border-color:var(--border) !important; }
   .dataTables_wrapper .dataTables_filter input,
-  .dataTables_wrapper select { background:#0f172a; color:#e2e8f0; border:1px solid #334155; border-radius:4px; padding:4px 8px; }
-  .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { color:#94a3b8; }
-  .dataTables_wrapper .dataTables_paginate .paginate_button { color:#94a3b8 !important; }
+  .dataTables_wrapper select { background:var(--input-bg); color:var(--text); border:1px solid var(--border); border-radius:4px; padding:4px 8px; }
+  .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { color:var(--muted); }
+  .dataTables_wrapper .dataTables_paginate .paginate_button { color:var(--muted) !important; }
   .dataTables_wrapper .dataTables_paginate .paginate_button.current { background:#f97316 !important; color:#fff !important; border-radius:4px; }
-  .dt-buttons .dt-button { background:#1e293b !important; color:#e2e8f0 !important; border:1px solid #334155 !important; border-radius:4px; padding:4px 12px; margin-right:4px; }
+  .dt-buttons .dt-button { background:var(--card) !important; color:var(--text) !important; border:1px solid var(--border) !important; border-radius:4px; padding:4px 12px; margin-right:4px; }
+  /* Toggle button */
+  #theme-toggle { cursor:pointer; border:1px solid var(--border); border-radius:8px; padding:6px 12px; background:var(--card); color:var(--text); font-size:13px; display:flex; align-items:center; gap:6px; transition:background .2s; }
+  #theme-toggle:hover { background:var(--hover); }
 </style>
 </head>
 <body class="p-6">
 
-<div class="mb-8">
-  <h1 class="text-2xl font-bold accent mb-1">Inteligência de Busca &amp; Expansão Web — Rede Fox</h1>
-  <p class="text-slate-400 text-sm">Gerado em {{ gerado_em }} &nbsp;·&nbsp; Atualizado toda segunda-feira às 4h BRT</p>
+<div class="mb-8 flex items-start justify-between flex-wrap gap-3">
+  <div>
+    <h1 class="text-2xl font-bold accent mb-1">Inteligência de Busca &amp; Expansão Web — Rede Fox</h1>
+    <p class="text-sm" style="color:var(--muted)">Gerado em {{ gerado_em }} &nbsp;·&nbsp; Atualizado toda segunda-feira às 4h BRT</p>
+  </div>
+  <button id="theme-toggle" onclick="toggleTheme()">
+    <span id="theme-icon">🌙</span>
+    <span id="theme-label">Tema Claro</span>
+  </button>
 </div>
 
 {% for banner in alertas %}
@@ -201,6 +224,40 @@ $(document).ready(function() {
     table.column(0).search(this.value).draw();
   });
 });
+
+// ── Tema claro/escuro ────────────────────────────────────────────
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const isLight = theme === 'light';
+  document.getElementById('theme-icon').textContent = isLight ? '🌙' : '☀️';
+  document.getElementById('theme-label').textContent = isLight ? 'Tema Escuro' : 'Tema Claro';
+
+  // Re-render Plotly charts com cores do tema atual
+  const bg = isLight ? '#ffffff' : '#1e293b';
+  const paperBg = isLight ? '#ffffff' : '#1e293b';
+  const fontColor = isLight ? '#0f172a' : '#e2e8f0';
+  const plotUpdate = { paper_bgcolor: paperBg, plot_bgcolor: bg, font: { color: fontColor } };
+  ['chart-cobertura','chart-saude','chart-concorrentes','chart-historico',
+   'chart-vitals','chart-sov','chart-reviews'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el._fullLayout) Plotly.relayout(id, plotUpdate);
+  });
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('fox-seo-theme', next); } catch(e) {}
+}
+
+// Inicializar com preferência salva ou padrão do sistema
+(function() {
+  let saved;
+  try { saved = localStorage.getItem('fox-seo-theme'); } catch(e) {}
+  const pref = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  applyTheme(pref);
+})();
 </script>
 </body>
 </html>"""

@@ -6,114 +6,162 @@
 <title>Fox SEO Engine — Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body { background: #0f172a; color: #f1f5f9; font-family: 'Segoe UI', sans-serif; }
-  .card { background: #1e293b; border-radius: 12px; padding: 24px; }
+  :root {
+    --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8;
+    --border: #334155; --hover: #334155; --sub: #64748b;
+    --badge-g-bg: #064e3b; --badge-g-c: #34d399;
+    --badge-o-bg: #431407; --badge-o-c: #f97316;
+    --row-border: #334155; --link: #60a5fa;
+  }
+  :root[data-theme="light"] {
+    --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b;
+    --border: #e2e8f0; --hover: #f8fafc; --sub: #94a3b8;
+    --badge-g-bg: #dcfce7; --badge-g-c: #166534;
+    --badge-o-bg: #ffedd5; --badge-o-c: #9a3412;
+    --row-border: #e2e8f0; --link: #2563eb;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; transition: background .2s, color .2s; margin: 0; }
+  .card { background: var(--card); border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
   .accent { color: #f97316; }
+  .muted { color: var(--muted); }
+  .sub { color: var(--sub); }
   .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-  .badge-green { background: #064e3b; color: #34d399; }
-  .badge-orange { background: #431407; color: #f97316; }
-  .spinner { animation: spin 1s linear infinite; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .badge-green { background: var(--badge-g-bg); color: var(--badge-g-c); }
+  .badge-orange { background: var(--badge-o-bg); color: var(--badge-o-c); }
+  .row-border { border-bottom: 1px solid var(--row-border); }
+  a { color: var(--link); }
+  #theme-btn {
+    cursor: pointer; border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 14px; background: var(--card); color: var(--text);
+    font-size: 13px; display: flex; align-items: center; gap: 6px;
+    transition: background .15s; white-space: nowrap;
+  }
+  #theme-btn:hover { background: var(--hover); }
 </style>
 </head>
 <body class="min-h-screen p-6">
 
 <div class="max-w-4xl mx-auto">
+
   <!-- Header -->
-  <div class="mb-8">
-    <div class="flex items-center gap-3 mb-2">
-      <svg class="w-8 h-8 accent" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-      </svg>
-      <h1 class="text-2xl font-bold">Fox SEO Engine</h1>
+  <div class="mb-8 flex items-start justify-between flex-wrap gap-3">
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <svg class="w-7 h-7 accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <h1 class="text-2xl font-bold">Fox SEO Engine</h1>
+      </div>
+      <p class="muted text-sm">Inteligência de Busca &amp; Expansão Web — Rede Fox</p>
     </div>
-    <p class="text-slate-400">Inteligência de Busca &amp; Expansão Web — Rede Fox</p>
+    <button id="theme-btn" onclick="toggleTheme()">
+      <span id="t-icon">☀️</span>
+      <span id="t-label">Tema Claro</span>
+    </button>
   </div>
 
-  <!-- Status card -->
-  <div class="card mb-6 border border-orange-500/30">
+  <!-- Status -->
+  <div class="card mb-6" style="border: 1px solid #f97316aa;">
     <div class="flex items-start gap-4">
       <div class="text-4xl">⏳</div>
       <div>
         <h2 class="text-lg font-semibold mb-1">Dashboard sendo preparado</h2>
-        <p class="text-slate-400 text-sm mb-3">
-          O pipeline SEO está configurado e será executado automaticamente toda <strong class="text-white">segunda-feira às 3h BRT</strong>.
-          Na próxima execução, este dashboard será substituído automaticamente pelo painel executivo completo com todos os dados da Rede Fox.
+        <p class="muted text-sm mb-3">
+          O pipeline SEO está configurado e será executado automaticamente toda
+          <strong style="color:var(--text)">segunda-feira às 3h BRT</strong>.
+          Na próxima execução este dashboard será substituído pelo painel executivo
+          completo com dados reais da Rede Fox.
         </p>
         <div class="flex flex-wrap gap-2">
           <span class="badge badge-green">✅ Pipeline configurado</span>
           <span class="badge badge-green">✅ GitHub Actions ativo</span>
-          <span class="badge badge-orange">⏳ Aguardando primeira execução automática</span>
+          <span class="badge badge-orange">⏳ Aguardando próxima execução</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Info grid -->
+  <!-- KPIs -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="card text-center">
       <div class="text-3xl font-bold accent mb-1">10</div>
-      <div class="text-slate-400 text-sm">Unidades monitoradas</div>
-      <div class="text-xs text-slate-500 mt-1">AM · RO · AC</div>
+      <div class="muted text-sm">Unidades monitoradas</div>
+      <div class="sub text-xs mt-1">AM · RO · AC</div>
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold accent mb-1">~155</div>
-      <div class="text-slate-400 text-sm">Buscas locais rastreadas</div>
-      <div class="text-xs text-slate-500 mt-1">por semana</div>
+      <div class="muted text-sm">Buscas locais rastreadas</div>
+      <div class="sub text-xs mt-1">por semana</div>
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold accent mb-1">4.000</div>
-      <div class="text-slate-400 text-sm">Queries SERP gratuitas</div>
-      <div class="text-xs text-slate-500 mt-1">Brave + Bing + Tavily / mês</div>
+      <div class="muted text-sm">Queries SERP gratuitas</div>
+      <div class="sub text-xs mt-1">Brave + Bing + Tavily / mês</div>
     </div>
   </div>
 
   <!-- Modules -->
   <div class="card mb-6">
-    <h3 class="font-semibold mb-4 text-slate-300">Módulos do pipeline</h3>
-    <div class="space-y-2 text-sm">
-      <div class="flex justify-between items-center py-2 border-b border-slate-700">
+    <h3 class="font-semibold mb-4 muted">Módulos do pipeline</h3>
+    <div class="text-sm">
+      <div class="flex justify-between items-center py-2 row-border">
         <span>🔍 Crawler Técnico do Site</span>
-        <span class="text-slate-500">output/1_auditoria_tecnica_site.csv</span>
+        <span class="sub text-xs">1_auditoria_tecnica_site.csv</span>
       </div>
-      <div class="flex justify-between items-center py-2 border-b border-slate-700">
+      <div class="flex justify-between items-center py-2 row-border">
         <span>📊 Google Search Console (90 dias)</span>
-        <span class="text-slate-500">output/2_gsc_performance.csv</span>
+        <span class="sub text-xs">2_gsc_performance.csv</span>
       </div>
-      <div class="flex justify-between items-center py-2 border-b border-slate-700">
+      <div class="flex justify-between items-center py-2 row-border">
         <span>🏆 SERP + Share of Voice local</span>
-        <span class="text-slate-500">output/3_serp_concorrencia_local.csv</span>
+        <span class="sub text-xs">3_serp_concorrencia_local.csv</span>
       </div>
-      <div class="flex justify-between items-center py-2 border-b border-slate-700">
-        <span>🗺️ Plano de expansão + Schemas JSON-LD</span>
-        <span class="text-slate-500">output/4_plano_expansao_landing_pages.csv</span>
+      <div class="flex justify-between items-center py-2 row-border">
+        <span>🗺️ Plano de expansão + Schemas JSON-LD + FAQ</span>
+        <span class="sub text-xs">4_plano_expansao.csv</span>
       </div>
-      <div class="flex justify-between items-center py-2 border-b border-slate-700">
+      <div class="flex justify-between items-center py-2 row-border">
         <span>⭐ Reviews Monitor por unidade</span>
-        <span class="text-slate-500">output/7_reviews_monitor.csv</span>
+        <span class="sub text-xs">7_reviews_monitor.csv</span>
       </div>
-      <div class="flex justify-between items-center py-2 border-b border-slate-700">
+      <div class="flex justify-between items-center py-2 row-border">
         <span>⚡ Core Web Vitals (LCP, CLS, INP)</span>
-        <span class="text-slate-500">output/6_core_web_vitals.csv</span>
+        <span class="sub text-xs">6_core_web_vitals.csv</span>
       </div>
       <div class="flex justify-between items-center py-2">
         <span>🚀 Indexing Pusher (IndexNow + Google)</span>
-        <span class="text-slate-500">automático</span>
+        <span class="sub text-xs">automático</span>
       </div>
     </div>
   </div>
 
   <!-- Footer -->
-  <div class="text-center text-slate-600 text-xs">
+  <div class="text-center text-xs sub">
     <p>fox-seo-engine · Rede Fox · Execução automática toda segunda-feira</p>
     <p class="mt-1">
-      <a href="https://github.com/pgup-sistemas/fox-seo-engine/actions"
-         class="text-slate-500 hover:text-orange-400 transition-colors" target="_blank">
+      <a href="https://github.com/pgup-sistemas/fox-seo-engine/actions" target="_blank">
         Ver execuções no GitHub Actions →
       </a>
     </p>
   </div>
 </div>
 
+<script>
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('t-icon').textContent  = t === 'light' ? '🌙' : '☀️';
+  document.getElementById('t-label').textContent = t === 'light' ? 'Tema Escuro' : 'Tema Claro';
+}
+function toggleTheme() {
+  const next = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('fox-seo-theme', next); } catch(e) {}
+}
+(function(){
+  let s; try { s = localStorage.getItem('fox-seo-theme'); } catch(e) {}
+  applyTheme(s || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+})();
+</script>
 </body>
 </html>
