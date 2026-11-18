@@ -1,0 +1,989 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Manaus",
+    "url": "https://redefox.com.br/unidades/manaus",
+    "telephone": "(92) 3622-7777",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Tarumã, 700, Praça 14 de Janeiro",
+      "addressLocality": "Manaus",
+      "addressRegion": "AM",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -3.119,
+      "longitude": -60.0217
+    },
+    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-12:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus e Geometria 3D"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento e Balanceamento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Suspensão e Amortecedores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Freios"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Troca de Óleo e Filtros"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Baterias Automotivas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ar Condicionado Automotivo"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Injeção Eletrônica e Scanner"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Arrefecimento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Fluido de Câmbio Automático"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Recapagem de Pneus"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento de Caminhões e Carretas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus Agrícolas e OTR"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Jorge Teixeira",
+    "url": "https://redefox.com.br/unidades/porto-velho-jorge-teixeira",
+    "telephone": "(69) 3217-3040",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Gov. Jorge Teixeira, 1159",
+      "addressLocality": "Porto Velho",
+      "addressRegion": "RO",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -8.7612,
+      "longitude": -63.9004
+    },
+    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-12:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus e Geometria 3D"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento e Balanceamento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Suspensão e Amortecedores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Freios"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Troca de Óleo e Filtros"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Baterias Automotivas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ar Condicionado Automotivo"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Injeção Eletrônica e Scanner"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Arrefecimento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Fluido de Câmbio Automático"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Nações Unidas",
+    "url": "https://redefox.com.br/unidades/porto-velho-nacoes-unidas",
+    "telephone": "(69) 3217-3030",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Nações Unidas, 805",
+      "addressLocality": "Porto Velho",
+      "addressRegion": "RO",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -8.7489,
+      "longitude": -63.885
+    },
+    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-12:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus e Geometria 3D"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento e Balanceamento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Suspensão e Amortecedores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Freios"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Troca de Óleo e Filtros"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Baterias Automotivas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ar Condicionado Automotivo"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Injeção Eletrônica e Scanner"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Arrefecimento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Fluido de Câmbio Automático"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Recapagem Porto Velho",
+    "url": "https://redefox.com.br/unidades/porto-velho-recapagem",
+    "telephone": "(69) 3217-8800",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Rua da Beira, 9400",
+      "addressLocality": "Porto Velho",
+      "addressRegion": "RO",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -8.77,
+      "longitude": -63.91
+    },
+    "openingHours": "Mo-Fr 07:00-17:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Recapagem de Pneus"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento de Caminhões e Carretas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus Agrícolas e OTR"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Ariquemes",
+    "url": "https://redefox.com.br/unidades/ariquemes",
+    "telephone": "(69) 3535-3270",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Canaã, 1717",
+      "addressLocality": "Ariquemes",
+      "addressRegion": "RO",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -9.9122,
+      "longitude": -63.0338
+    },
+    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-12:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus e Geometria 3D"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento e Balanceamento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Suspensão e Amortecedores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Freios"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Troca de Óleo e Filtros"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Baterias Automotivas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ar Condicionado Automotivo"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Injeção Eletrônica e Scanner"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Arrefecimento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Fluido de Câmbio Automático"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Recapagem de Pneus"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento de Caminhões e Carretas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus Agrícolas e OTR"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Ji-Paraná",
+    "url": "https://redefox.com.br/unidades/ji-parana",
+    "telephone": "(69) 3422-2711",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Transcontinental, 2444",
+      "addressLocality": "Ji-Paraná",
+      "addressRegion": "RO",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -10.8824,
+      "longitude": -61.9469
+    },
+    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-12:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus e Geometria 3D"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento e Balanceamento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Suspensão e Amortecedores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Freios"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Troca de Óleo e Filtros"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Baterias Automotivas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ar Condicionado Automotivo"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Injeção Eletrônica e Scanner"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Arrefecimento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Fluido de Câmbio Automático"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Recapagem de Pneus"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento de Caminhões e Carretas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus Agrícolas e OTR"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Cacoal",
+    "url": "https://redefox.com.br/unidades/cacoal",
+    "telephone": "(69) 3441-2384",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Castelo Branco, 19558",
+      "addressLocality": "Cacoal",
+      "addressRegion": "RO",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -11.4358,
+      "longitude": -61.4474
+    },
+    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-12:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus e Geometria 3D"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento e Balanceamento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Suspensão e Amortecedores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Freios"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Troca de Óleo e Filtros"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Baterias Automotivas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ar Condicionado Automotivo"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Injeção Eletrônica e Scanner"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Arrefecimento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Fluido de Câmbio Automático"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Recapagem de Pneus"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento de Caminhões e Carretas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus Agrícolas e OTR"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Vilhena Carros",
+    "url": "https://redefox.com.br/unidades/vilhena-carros",
+    "telephone": "(69) 3321-4155",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Marechal Rondon, 3224",
+      "addressLocality": "Vilhena",
+      "addressRegion": "RO",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -12.7406,
+      "longitude": -60.1458
+    },
+    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-12:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus e Geometria 3D"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento e Balanceamento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Suspensão e Amortecedores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Freios"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Troca de Óleo e Filtros"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Baterias Automotivas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ar Condicionado Automotivo"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Injeção Eletrônica e Scanner"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Arrefecimento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Fluido de Câmbio Automático"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Vilhena Caminhões",
+    "url": "https://redefox.com.br/unidades/vilhena-caminhoes",
+    "telephone": "(69) 3322-3365",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Marechal Rondon, 7940",
+      "addressLocality": "Vilhena",
+      "addressRegion": "RO",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -12.75,
+      "longitude": -60.155
+    },
+    "openingHours": "Mo-Fr 07:00-17:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Recapagem de Pneus"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento de Caminhões e Carretas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus Agrícolas e OTR"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Fox Rio Branco",
+    "url": "https://redefox.com.br/unidades/rio-branco",
+    "telephone": "(68) 3221-2271",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Via Chico Mendes, 1473",
+      "addressLocality": "Rio Branco",
+      "addressRegion": "AC",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -9.9754,
+      "longitude": -67.8249
+    },
+    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-12:00",
+    "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, PIX",
+    "priceRange": "$$",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Serviços Automotivos",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus e Geometria 3D"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento e Balanceamento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Suspensão e Amortecedores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Freios"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Troca de Óleo e Filtros"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Baterias Automotivas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ar Condicionado Automotivo"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Injeção Eletrônica e Scanner"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Sistema de Arrefecimento"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Fluido de Câmbio Automático"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Recapagem de Pneus"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Alinhamento de Caminhões e Carretas"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Pneus Agrícolas e OTR"
+          }
+        }
+      ]
+    }
+  }
+]
