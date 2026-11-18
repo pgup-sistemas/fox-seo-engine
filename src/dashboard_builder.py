@@ -401,7 +401,8 @@ def _chart_historico(df_hist: pd.DataFrame | None) -> str | None:
     if not traces:
         return None
     fig = go.Figure(traces)
-    fig.update_layout(height=320, margin=dict(t=20, b=40, l=20, r=20))
+    fig.update_layout(height=320, margin=dict(t=20, b=40, l=20, r=20),
+                      xaxis=dict(type="date"))
     return fig.to_json()
 
 
@@ -434,7 +435,7 @@ def _chart_sov(df_hist: pd.DataFrame | None, sov_atual: float) -> str | None:
     fig.add_hline(y=60, line_dash="dash", line_color="#22c55e",
                   annotation_text="Meta 60%")
     fig.update_layout(height=320, margin=dict(t=20, b=40, l=20, r=20),
-                      yaxis=dict(range=[0, 100]))
+                      xaxis=dict(type="date"), yaxis=dict(range=[0, 100]))
     return fig.to_json()
 
 
@@ -482,6 +483,9 @@ def _update_historico(kpis: dict):
         df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
     else:
         df = pd.DataFrame([row])
+    # Manter apenas a última entrada por dia
+    df = df.drop_duplicates(subset=["data"], keep="last")
+    df = df.sort_values("data").reset_index(drop=True)
     df.to_csv(path, index=False, encoding="utf-8")
 
 
