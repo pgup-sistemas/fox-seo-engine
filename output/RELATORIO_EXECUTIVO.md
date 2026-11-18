@@ -1,5 +1,5 @@
 # Relatório Executivo — Rede Fox SEO Engine
-**Gerado em:** 18/11/2026 20:23
+**Gerado em:** 18/11/2026 22:10
 
 ## Resumo de KPIs
 - Páginas mapeadas: 158
@@ -10,7 +10,7 @@
 ## Status dos Módulos
 | Módulo | Status | Duração |
 |---|---|---|
-| crawler_site | ✅ OK | 0:00:22 |
+| crawler_site | ✅ OK | 0:00:19 |
 | gsc_auditor | ✅ OK | 0:00:00 |
 | serp_scanner | ✅ OK | 0:00:31 |
 | core_web_vitals | ⏱ Timeout | 0:05:00 |
