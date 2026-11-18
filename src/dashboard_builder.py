@@ -10,6 +10,13 @@ from jinja2 import Template
 logger = logging.getLogger(__name__)
 
 TEMPLATE = """<!DOCTYPE html>
+{% macro empty_state(title, hint) %}
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;text-align:center;min-height:180px;gap:10px">
+  <svg style="width:32px;height:32px;color:var(--border)" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"/></svg>
+  <p style="font-size:13px;font-weight:600;color:var(--muted);margin:0">{{ title }}</p>
+  <p style="font-size:11px;color:var(--muted);opacity:.6;max-width:340px;line-height:1.5;margin:0">{{ hint }}</p>
+</div>
+{% endmacro %}
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -77,9 +84,12 @@ TEMPLATE = """<!DOCTYPE html>
   </button>
 </div>
 
-{% for banner in alertas %}
-<div class="alert-banner mb-4">⚠ {{ banner }}</div>
-{% endfor %}
+{% if alertas %}
+<div class="alert-banner mb-6" style="display:flex;align-items:flex-start;gap:10px">
+  <svg style="width:16px;height:16px;flex-shrink:0;margin-top:1px;color:#fca5a5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+  <div>{% for banner in alertas %}<p style="font-size:13px;margin:0 0 2px">{{ banner }}</p>{% endfor %}</div>
+</div>
+{% endif %}
 
 <!-- KPIs -->
 <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
@@ -115,14 +125,14 @@ TEMPLATE = """<!DOCTYPE html>
       <svg style="width:14px;height:14px;color:#34d399;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg>
       Cobertura de Serviços por Cidade
     </h3>
-    <div id="chart-cobertura"></div>
+    <div id="chart-cobertura">{% if not disponivel.expansao %}{{ empty_state('Plano de expansão não gerado nesta execução.','Configure ao menos um provedor SERP (BRAVE_SEARCH_KEY, BING_SEARCH_KEY ou TAVILY_API_KEY) e reexecute o pipeline.') }}{% endif %}</div>
   </div>
   <div class="card p-4">
     <h3 class="text-sm font-semibold mb-3" style="color:var(--muted);display:flex;align-items:center;gap:6px">
       <svg style="width:14px;height:14px;color:#3b82f6;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
       Saúde Técnica On-Page
     </h3>
-    <div id="chart-saude"></div>
+    <div id="chart-saude">{% if not disponivel.auditoria %}{{ empty_state('Auditoria técnica indisponível.','O crawler não completou esta execução. Será reprocessado automaticamente na próxima segunda-feira.') }}{% endif %}</div>
   </div>
 </div>
 
@@ -133,7 +143,7 @@ TEMPLATE = """<!DOCTYPE html>
       <svg style="width:14px;height:14px;color:#e31b23;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"/></svg>
       Top 10 Concorrentes Locais
     </h3>
-    <div id="chart-concorrentes"></div>
+    <div id="chart-concorrentes">{% if not disponivel.serp %}{{ empty_state('Dados SERP indisponíveis.','Adicione ao menos uma chave de busca nos Secrets do repositório: BRAVE_SEARCH_KEY (2.000/mês grátis), BING_SEARCH_KEY (1.000/mês grátis) ou TAVILY_API_KEY (1.000/mês grátis).') }}{% endif %}</div>
   </div>
   <div class="card p-4">
     <h3 class="text-sm font-semibold mb-3" style="color:var(--muted);display:flex;align-items:center;gap:6px">
@@ -151,7 +161,7 @@ TEMPLATE = """<!DOCTYPE html>
       <svg style="width:14px;height:14px;color:#38bdf8;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
       Core Web Vitals (Mobile)
     </h3>
-    <div id="chart-vitals"></div>
+    <div id="chart-vitals">{% if not disponivel.vitals %}{{ empty_state('Core Web Vitals indisponível.','Opcional: adicione PSI_API_KEY nos Secrets para 400 req/dia. Sem chave, usa o limite gratuito de 25 req/dia — será preenchido automaticamente no próximo run.') }}{% endif %}</div>
   </div>
   <div class="card p-4">
     <h3 class="text-sm font-semibold mb-3" style="color:var(--muted);display:flex;align-items:center;gap:6px">
@@ -170,7 +180,7 @@ TEMPLATE = """<!DOCTYPE html>
   {% if reviews_disponivel %}
   <div id="chart-reviews"></div>
   {% else %}
-  <p class="text-slate-400 text-sm">ℹ Reviews Monitor desativado — configure PLACES_API_KEY para habilitar.</p>
+  {{ empty_state('Reviews Monitor desativado.','Opcional: adicione PLACES_API_KEY nos Secrets (Google Places API, 200 req/dia grátis) para monitorar as avaliações das 10 unidades no Google Maps.') }}
   {% endif %}
 </div>
 
@@ -486,15 +496,20 @@ def run():
     df_reviews = _safe_load_csv("output/7_reviews_monitor.csv")
     df_hist = _safe_load_csv("output/historico_evolucao.csv")
 
-    alertas = []
-    modulos = {
-        "Auditoria Técnica": df_audit,
-        "GSC Performance": df_gsc,
-        "SERP Concorrência": df_serp,
-        "Plano de Expansão": df_expansion,
+    disponivel = {
+        "auditoria": df_audit is not None,
+        "gsc": df_gsc is not None,
+        "serp": df_serp is not None,
+        "expansao": df_expansion is not None,
+        "vitals": df_vitals is not None,
+        "reviews": df_reviews is not None,
     }
-    for nome, df in modulos.items():
-        if df is None:
+
+    alertas = []
+    nomes = {"auditoria": "Auditoria Técnica", "gsc": "GSC Performance",
+             "serp": "SERP Concorrência", "expansao": "Plano de Expansão"}
+    for key, nome in nomes.items():
+        if not disponivel[key]:
             alertas.append(f"Dados de {nome} indisponíveis nesta execução.")
 
     sov = _load_sov()
@@ -541,7 +556,8 @@ def run():
         kpis=kpis,
         charts_json=json.dumps(charts, ensure_ascii=False),
         expansion_data=expansion_data,
-        reviews_disponivel=df_reviews is not None,
+        reviews_disponivel=disponivel["reviews"],
+        disponivel=disponivel,
     )
 
     Path("docs").mkdir(exist_ok=True)
