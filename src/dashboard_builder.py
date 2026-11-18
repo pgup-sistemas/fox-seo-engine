@@ -15,6 +15,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inteligência SEO — Rede Fox</title>
+<link rel="icon" type="image/x-icon" href="redefox_favicon.ico">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
@@ -26,18 +27,19 @@ TEMPLATE = """<!DOCTYPE html>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root {
-    --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8;
-    --border: #334155; --input-bg: #0f172a; --hover: #334155;
-    --alert-bg: #7f1d1d; --alert-border: #ef4444;
+    --bg: #111111; --card: #1a1a1a; --text: #e2e8f0; --muted: #9ca3af;
+    --border: #2d2d2d; --input-bg: #111111; --hover: #222222;
+    --alert-bg: #3f0000; --alert-border: #e31b23;
+    --fox-red: #e31b23; --fox-red-dark: #b51219;
   }
   :root[data-theme="light"] {
-    --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b;
-    --border: #e2e8f0; --input-bg: #ffffff; --hover: #f8fafc;
-    --alert-bg: #fee2e2; --alert-border: #ef4444;
+    --bg: #f5f5f5; --card: #ffffff; --text: #111111; --muted: #555555;
+    --border: #e0e0e0; --input-bg: #ffffff; --hover: #f8f8f8;
+    --alert-bg: #fff0f0; --alert-border: #e31b23;
   }
   body { background:var(--bg); color:var(--text); font-family:sans-serif; transition:background .2s,color .2s; }
-  .card { background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.12); }
-  .accent { color:#f97316; }
+  .card { background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.18); }
+  .accent { color:var(--fox-red); }
   .alert-banner { background:var(--alert-bg); border:1px solid var(--alert-border); border-radius:8px; padding:12px 16px; margin-bottom:12px; }
   .kpi-gauge { font-size:12px; padding:2px 8px; border-radius:9999px; font-weight:600; display:inline-block; }
   .gauge-green { background:#166534; color:#86efac; }
@@ -55,7 +57,7 @@ TEMPLATE = """<!DOCTYPE html>
   .dataTables_wrapper select { background:var(--input-bg); color:var(--text); border:1px solid var(--border); border-radius:4px; padding:4px 8px; }
   .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { color:var(--muted); }
   .dataTables_wrapper .dataTables_paginate .paginate_button { color:var(--muted) !important; }
-  .dataTables_wrapper .dataTables_paginate .paginate_button.current { background:#f97316 !important; color:#fff !important; border-radius:4px; }
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current { background:var(--fox-red) !important; color:#fff !important; border-radius:4px; }
   .dt-buttons .dt-button { background:var(--card) !important; color:var(--text) !important; border:1px solid var(--border) !important; border-radius:4px; padding:4px 12px; margin-right:4px; }
   /* Toggle button */
   #theme-toggle { cursor:pointer; border:1px solid var(--border); border-radius:8px; padding:6px 12px; background:var(--card); color:var(--text); font-size:13px; display:flex; align-items:center; gap:6px; transition:background .2s; }
@@ -128,7 +130,7 @@ TEMPLATE = """<!DOCTYPE html>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
   <div class="card p-4">
     <h3 class="text-sm font-semibold mb-3" style="color:var(--muted);display:flex;align-items:center;gap:6px">
-      <svg style="width:14px;height:14px;color:#f97316;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"/></svg>
+      <svg style="width:14px;height:14px;color:#e31b23;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"/></svg>
       Top 10 Concorrentes Locais
     </h3>
     <div id="chart-concorrentes"></div>
@@ -153,7 +155,7 @@ TEMPLATE = """<!DOCTYPE html>
   </div>
   <div class="card p-4">
     <h3 class="text-sm font-semibold mb-3" style="color:var(--muted);display:flex;align-items:center;gap:6px">
-      <svg style="width:14px;height:14px;color:#f97316;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
+      <svg style="width:14px;height:14px;color:#e31b23;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
       Share of Voice — Evolução
     </h3>
     <div id="chart-sov"></div>
@@ -197,7 +199,7 @@ window.expansionData = {{ expansion_data | tojson }};
 
 // Renderizar gráficos
 const cfg = { responsive: true, displayModeBar: false };
-const dark = { paper_bgcolor: '#1e293b', plot_bgcolor: '#1e293b',
+const dark = { paper_bgcolor: '#1a1a1a', plot_bgcolor: '#1a1a1a',
                font: { color: '#e2e8f0', size: 11 } };
 
 function renderChart(divId, figJson) {
@@ -256,8 +258,8 @@ function applyTheme(theme) {
   document.getElementById('theme-label').textContent = isLight ? 'Tema Escuro' : 'Tema Claro';
 
   // Re-render Plotly charts com cores do tema atual
-  const bg = isLight ? '#ffffff' : '#1e293b';
-  const paperBg = isLight ? '#ffffff' : '#1e293b';
+  const bg = isLight ? '#ffffff' : '#1a1a1a';
+  const paperBg = isLight ? '#ffffff' : '#1a1a1a';
   const fontColor = isLight ? '#0f172a' : '#e2e8f0';
   const plotUpdate = { paper_bgcolor: paperBg, plot_bgcolor: bg, font: { color: fontColor } };
   ['chart-cobertura','chart-saude','chart-concorrentes','chart-historico',
@@ -282,6 +284,22 @@ function toggleTheme() {
   applyTheme(pref);
 })();
 </script>
+
+<!-- Footer -->
+<footer style="margin-top:48px;padding:20px 0 28px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <span style="font-size:12px;color:var(--muted)">
+    &copy; <span id="footer-year"></span> PageUp Sistemas
+  </span>
+  <a href="https://wa.me/5569993882222" target="_blank" rel="noopener"
+     style="display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;transition:color .15s"
+     onmouseover="this.style.color='#25d366'" onmouseout="this.style.color='var(--muted)'">
+    <svg style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    (69) 99938-2222
+  </a>
+</footer>
+<script>document.getElementById('footer-year').textContent = new Date().getFullYear();</script>
 </body>
 </html>"""
 
@@ -315,7 +333,7 @@ def _chart_cobertura(df_expansion: pd.DataFrame | None) -> str | None:
     ausente = summary.get("ausente", pd.Series(dtype=int))
     fig = go.Figure([
         go.Bar(name="Existe", x=summary.index.tolist(), y=existe.tolist(), marker_color="#22c55e"),
-        go.Bar(name="Ausente", x=summary.index.tolist(), y=ausente.tolist(), marker_color="#f97316"),
+        go.Bar(name="Ausente", x=summary.index.tolist(), y=ausente.tolist(), marker_color="#e31b23"),
     ])
     fig.update_layout(barmode="stack", height=320, margin=dict(t=20, b=40, l=20, r=20))
     return fig.to_json()
@@ -329,7 +347,7 @@ def _chart_saude(df_audit: pd.DataFrame | None) -> str | None:
     fig = go.Figure(go.Pie(
         labels=["Com Schema.org", "Sem Schema.org"],
         values=[com, sem],
-        marker_colors=["#3b82f6", "#f97316"],
+        marker_colors=["#3b82f6", "#e31b23"],
         hole=0.5,
     ))
     fig.update_layout(height=320, margin=dict(t=20, b=20, l=20, r=20))
@@ -363,7 +381,7 @@ def _chart_historico(df_hist: pd.DataFrame | None) -> str | None:
         return None
     df = df_hist.tail(52)
     traces = []
-    colors = {"cobertura_local_pct": "#3b82f6", "lps_recomendadas": "#f97316",
+    colors = {"cobertura_local_pct": "#3b82f6", "lps_recomendadas": "#e31b23",
               "paginas_mapeadas": "#22c55e"}
     for col, color in colors.items():
         if col in df.columns:
@@ -383,7 +401,7 @@ def _chart_vitals(df_vitals: pd.DataFrame | None) -> str | None:
     df = df_vitals.head(10)
     fig = go.Figure()
     if "lcp_s" in df.columns:
-        colors = ["#22c55e" if v <= 2.5 else ("#f97316" if v <= 4.0 else "#ef4444")
+        colors = ["#22c55e" if v <= 2.5 else ("#f59e0b" if v <= 4.0 else "#ef4444")
                   for v in df["lcp_s"].fillna(0)]
         fig.add_trace(go.Bar(name="LCP (s)", x=df["url"].str[-40:].tolist(),
                              y=df["lcp_s"].tolist(), marker_color=colors))
@@ -401,7 +419,7 @@ def _chart_sov(df_hist: pd.DataFrame | None, sov_atual: float) -> str | None:
         fig.add_trace(go.Scatter(
             x=df["data"].tolist(), y=df["share_of_voice_pct"].tolist(),
             mode="lines+markers", name="Share of Voice",
-            line=dict(color="#f97316"),
+            line=dict(color="#e31b23"),
         ))
     fig.add_hline(y=60, line_dash="dash", line_color="#22c55e",
                   annotation_text="Meta 60%")
@@ -419,7 +437,7 @@ def _chart_reviews(df_reviews: pd.DataFrame | None) -> str | None:
         if r >= 4.5:
             colors.append("#22c55e")
         elif r >= 4.0:
-            colors.append("#f97316")
+            colors.append("#f59e0b")
         else:
             colors.append("#ef4444")
     fig = go.Figure(go.Bar(
@@ -430,7 +448,7 @@ def _chart_reviews(df_reviews: pd.DataFrame | None) -> str | None:
         text=df_reviews["status"].tolist(),
         textposition="outside",
     ))
-    fig.add_vline(x=4.0, line_dash="dot", line_color="#f97316",
+    fig.add_vline(x=4.0, line_dash="dot", line_color="#f59e0b",
                   annotation_text="Mínimo 4.0")
     fig.update_layout(height=360, margin=dict(t=20, b=20, l=200, r=60),
                       xaxis=dict(range=[0, 5]))
