@@ -174,7 +174,7 @@ def run():
     logger.info("Iniciando crawler...")
     client = httpx.Client(
         http2=True,
-        timeout=httpx.Timeout(connect=5.0, read=10.0),
+        timeout=httpx.Timeout(10.0, connect=5.0),
         headers={"User-Agent": USER_AGENT},
         follow_redirects=True,
     )

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 import requests
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_exception, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from config.matriz_negocio import (
     MEDIDAS_PNEUS_CHAVE,
@@ -162,9 +162,16 @@ def _set_cooldown(quota: dict, provider_name: str):
     logger.warning(f"Provider '{provider_name}' em cooldown por 1h.")
 
 
+def _is_retryable(exc: BaseException) -> bool:
+    """Retentar apenas em erros de rede ou 429/503 — nunca em 401/403/422 (key inválida)."""
+    if isinstance(exc, requests.HTTPError) and exc.response is not None:
+        return exc.response.status_code in (429, 503, 500, 502)
+    return isinstance(exc, (requests.ConnectionError, requests.Timeout))
+
+
 @retry(wait=wait_exponential(multiplier=1, min=2, max=32),
        stop=stop_after_attempt(3),
-       retry=retry_if_exception_type(requests.RequestException))
+       retry=retry_if_exception(_is_retryable))
 def _search_brave(query: str, key: str) -> list[dict]:
     resp = requests.get(
         "https://api.search.brave.com/res/v1/web/search",
@@ -172,6 +179,9 @@ def _search_brave(query: str, key: str) -> list[dict]:
         params={"q": query, "count": 10, "country": "BR", "search_lang": "pt"},
         timeout=30,
     )
+    if resp.status_code in (401, 403, 422):
+        logger.warning(f"Brave API: chave inválida ou sem permissão (HTTP {resp.status_code}). Verifique o Secret BRAVE_SEARCH_KEY.")
+        return []
     resp.raise_for_status()
     return [{"url": r["url"], "title": r["title"]}
             for r in resp.json().get("web", {}).get("results", [])]
@@ -179,7 +189,7 @@ def _search_brave(query: str, key: str) -> list[dict]:
 
 @retry(wait=wait_exponential(multiplier=1, min=2, max=32),
        stop=stop_after_attempt(3),
-       retry=retry_if_exception_type(requests.RequestException))
+       retry=retry_if_exception(_is_retryable))
 def _search_bing(query: str, key: str) -> list[dict]:
     resp = requests.get(
         "https://api.bing.microsoft.com/v7.0/search",
@@ -187,6 +197,9 @@ def _search_bing(query: str, key: str) -> list[dict]:
         params={"q": query, "count": 10, "mkt": "pt-BR", "cc": "BR"},
         timeout=30,
     )
+    if resp.status_code in (401, 403):
+        logger.warning(f"Bing API: chave inválida (HTTP {resp.status_code}). Verifique o Secret BING_SEARCH_KEY.")
+        return []
     resp.raise_for_status()
     return [{"url": r["url"], "title": r["name"]}
             for r in resp.json().get("webPages", {}).get("value", [])]
@@ -194,7 +207,7 @@ def _search_bing(query: str, key: str) -> list[dict]:
 
 @retry(wait=wait_exponential(multiplier=1, min=2, max=32),
        stop=stop_after_attempt(3),
-       retry=retry_if_exception_type(requests.RequestException))
+       retry=retry_if_exception(_is_retryable))
 def _search_tavily(query: str, key: str) -> list[dict]:
     resp = requests.post(
         "https://api.tavily.com/search",
@@ -202,6 +215,9 @@ def _search_tavily(query: str, key: str) -> list[dict]:
               "include_domains": [], "search_depth": "basic"},
         timeout=30,
     )
+    if resp.status_code in (401, 403):
+        logger.warning(f"Tavily API: chave inválida (HTTP {resp.status_code}). Verifique o Secret TAVILY_API_KEY.")
+        return []
     resp.raise_for_status()
     return [{"url": r["url"], "title": r["title"]}
             for r in resp.json().get("results", [])]
@@ -209,7 +225,7 @@ def _search_tavily(query: str, key: str) -> list[dict]:
 
 @retry(wait=wait_exponential(multiplier=1, min=2, max=32),
        stop=stop_after_attempt(3),
-       retry=retry_if_exception_type(requests.RequestException))
+       retry=retry_if_exception(_is_retryable))
 def _search_dataforseo(query: str, login_b64: str) -> list[dict]:
     import base64
     creds = base64.b64decode(login_b64).decode()
