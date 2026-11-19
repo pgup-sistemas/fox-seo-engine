@@ -11,7 +11,7 @@ from config.matriz_negocio import DOMAIN, normalize_url
 logger = logging.getLogger(__name__)
 
 PSI_BASE = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
-MAX_URLS = 10
+MAX_URLS = 5
 
 
 def _get_top_urls() -> list[str]:
@@ -43,6 +43,10 @@ def _fetch_psi(url: str) -> dict | None:
         try:
             resp = requests.get(PSI_BASE, params=params, timeout=60)
             if resp.status_code == 429:
+                if not key:
+                    # Sem chave API o limite diário é 25 req — parar imediatamente
+                    logger.warning(f"PSI rate limit sem PSI_API_KEY — encerrando (limite diário atingido).")
+                    return None
                 logger.warning(f"PSI rate limit para {url}, aguardando 60s...")
                 time.sleep(60)
                 continue
@@ -81,11 +85,16 @@ def run():
     logger.info(f"Medindo {len(urls)} URLs via PageSpeed Insights...")
 
     records = []
+    psi_key = os.environ.get("PSI_API_KEY")
     for url in urls:
         result = _fetch_psi(url)
         if result:
             records.append(result)
             logger.info(f"PSI {url}: score={result['performance_score']}, LCP={result['lcp_s']}s")
+        elif not psi_key:
+            # Rate limit sem chave — parar para não desperdiçar tempo
+            logger.warning("PSI sem chave atingiu rate limit. Configure PSI_API_KEY para medir mais URLs.")
+            break
         time.sleep(1)
 
     if not records:

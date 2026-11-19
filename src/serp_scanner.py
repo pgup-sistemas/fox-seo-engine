@@ -162,8 +162,18 @@ def _set_cooldown(quota: dict, provider_name: str):
     logger.warning(f"Provider '{provider_name}' em cooldown por 1h.")
 
 
+class _AuthError(Exception):
+    """Chave de API inválida/sem permissão — não retentar, trocar de provedor."""
+    def __init__(self, provider: str, status: int):
+        self.provider = provider
+        self.status = status
+        super().__init__(f"{provider} HTTP {status}: chave inválida ou sem permissão")
+
+
 def _is_retryable(exc: BaseException) -> bool:
     """Retentar apenas em erros de rede ou 429/503 — nunca em 401/403/422 (key inválida)."""
+    if isinstance(exc, _AuthError):
+        return False
     if isinstance(exc, requests.HTTPError) and exc.response is not None:
         return exc.response.status_code in (429, 503, 500, 502)
     return isinstance(exc, (requests.ConnectionError, requests.Timeout))
@@ -176,12 +186,11 @@ def _search_brave(query: str, key: str) -> list[dict]:
     resp = requests.get(
         "https://api.search.brave.com/res/v1/web/search",
         headers={"Accept": "application/json", "X-Subscription-Token": key},
-        params={"q": query, "count": 10, "country": "BR", "search_lang": "pt"},
+        params={"q": query, "count": 10},
         timeout=30,
     )
     if resp.status_code in (401, 403, 422):
-        logger.warning(f"Brave API: chave inválida ou sem permissão (HTTP {resp.status_code}). Verifique o Secret BRAVE_SEARCH_KEY.")
-        return []
+        raise _AuthError("brave", resp.status_code)
     resp.raise_for_status()
     return [{"url": r["url"], "title": r["title"]}
             for r in resp.json().get("web", {}).get("results", [])]
@@ -198,8 +207,7 @@ def _search_bing(query: str, key: str) -> list[dict]:
         timeout=30,
     )
     if resp.status_code in (401, 403):
-        logger.warning(f"Bing API: chave inválida (HTTP {resp.status_code}). Verifique o Secret BING_SEARCH_KEY.")
-        return []
+        raise _AuthError("bing", resp.status_code)
     resp.raise_for_status()
     return [{"url": r["url"], "title": r["name"]}
             for r in resp.json().get("webPages", {}).get("value", [])]
@@ -216,8 +224,7 @@ def _search_tavily(query: str, key: str) -> list[dict]:
         timeout=30,
     )
     if resp.status_code in (401, 403):
-        logger.warning(f"Tavily API: chave inválida (HTTP {resp.status_code}). Verifique o Secret TAVILY_API_KEY.")
-        return []
+        raise _AuthError("tavily", resp.status_code)
     resp.raise_for_status()
     return [{"url": r["url"], "title": r["title"]}
             for r in resp.json().get("results", [])]
@@ -251,32 +258,49 @@ def _do_search(query: str, quota: dict, cache: dict) -> list[dict] | None:
         if (datetime.now() - cached_at).days < CACHE_TTL_DAYS:
             return cached.get("results", [])
 
-    provider = _select_provider(quota)
-    if not provider:
-        logger.error(f"Nenhum provedor disponível para: {query}")
-        return None
-
-    key = os.environ.get(provider["env_key"])
+    # Tentar até todos os provedores disponíveis (fallback automático em AuthError)
+    tried = set()
     results = None
-    try:
-        name = provider["name"]
-        if name == "brave":
-            results = _search_brave(query, key)
-        elif name == "bing":
-            results = _search_bing(query, key)
-        elif name == "tavily":
-            results = _search_tavily(query, key)
-        elif name == "dataforseo":
-            results = _search_dataforseo(query, key)
+    while True:
+        provider = _select_provider(quota)
+        if not provider or provider["name"] in tried:
+            if not results:
+                logger.error(f"Nenhum provedor disponível para: {query}")
+            break
 
-        quota[name]["used"] = quota[name].get("used", 0) + 1
-        cache[cache_key] = {"results": results, "cached_at": datetime.now().isoformat()}
-    except requests.HTTPError as e:
-        if e.response is not None and e.response.status_code in (429, 503):
-            _set_cooldown(quota, provider["name"])
-        logger.error(f"Erro HTTP ao buscar '{query}': {e}")
-    except Exception as e:
-        logger.error(f"Erro ao buscar '{query}': {e}")
+        tried.add(provider["name"])
+        key = os.environ.get(provider["env_key"])
+        try:
+            name = provider["name"]
+            if name == "brave":
+                results = _search_brave(query, key)
+            elif name == "bing":
+                results = _search_bing(query, key)
+            elif name == "tavily":
+                results = _search_tavily(query, key)
+            elif name == "dataforseo":
+                results = _search_dataforseo(query, key)
+
+            quota[name]["used"] = quota[name].get("used", 0) + 1
+            cache[cache_key] = {"results": results, "cached_at": datetime.now().isoformat()}
+            break
+        except _AuthError as e:
+            logger.warning(f"{e} — desativando '{e.provider}' por esta execução e tentando próximo provedor.")
+            # Cooldown de 30 dias = inutiliza o provedor pelo resto do mês
+            expiry = (datetime.now() + timedelta(days=30)).isoformat()
+            if "cooldowns" not in quota:
+                quota["cooldowns"] = {}
+            quota["cooldowns"][e.provider] = expiry
+            _save_quota(quota)
+            # loop: _select_provider escolherá o próximo
+        except requests.HTTPError as e:
+            if e.response is not None and e.response.status_code in (429, 503):
+                _set_cooldown(quota, provider["name"])
+            logger.error(f"Erro HTTP ao buscar '{query}': {e}")
+            break
+        except Exception as e:
+            logger.error(f"Erro ao buscar '{query}': {e}")
+            break
 
     return results
 
