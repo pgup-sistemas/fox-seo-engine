@@ -69,6 +69,25 @@ TEMPLATE = """<!DOCTYPE html>
   /* Toggle button */
   #theme-toggle { cursor:pointer; border:1px solid var(--border); border-radius:8px; padding:6px 12px; background:var(--card); color:var(--text); font-size:13px; display:flex; align-items:center; gap:6px; transition:background .2s; }
   #theme-toggle:hover { background:var(--hover); }
+  /* Tabs */
+  .tab-bar { display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:28px; }
+  .tab-btn { padding:8px 20px; font-size:13px; font-weight:600; border:none; background:transparent; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .15s,border-color .15s; }
+  .tab-btn:hover { color:var(--text); }
+  .tab-btn.active { color:var(--fox-red); border-bottom-color:var(--fox-red); }
+  /* Guide cards */
+  .guide-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media(max-width:768px){ .guide-grid { grid-template-columns:1fr; } }
+  .guide-card { background:var(--card); border-radius:12px; padding:20px; }
+  .guide-card h4 { font-size:14px; font-weight:700; margin:0 0 4px; color:var(--text); }
+  .guide-card .desc { font-size:12px; color:var(--muted); margin:0 0 14px; line-height:1.6; }
+  .semaforo { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:14px; }
+  .semaforo td { padding:5px 8px; border-bottom:1px solid var(--border); }
+  .semaforo td:first-child { width:28px; text-align:center; }
+  .semaforo td:nth-child(2) { font-weight:600; width:90px; }
+  .semaforo tr:last-child td { border-bottom:none; }
+  .guide-action { background:var(--bg); border-left:3px solid var(--fox-red); padding:8px 12px; border-radius:0 6px 6px 0; font-size:12px; color:var(--text); line-height:1.6; }
+  .guide-action strong { color:var(--fox-red); display:block; margin-bottom:2px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+  .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:28px 0 12px; }
 </style>
 </head>
 <body class="p-6">
@@ -84,6 +103,14 @@ TEMPLATE = """<!DOCTYPE html>
   </button>
 </div>
 
+<!-- Tab bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('painel',this)">📊 Painel</button>
+  <button class="tab-btn" onclick="switchTab('guia',this)">📖 Guia de Leitura</button>
+</div>
+
+<!-- ═══ PAINEL ═══ -->
+<div id="tab-painel">
 {% if alertas %}
 <div class="alert-banner mb-6" style="display:flex;align-items:flex-start;gap:10px">
   <svg style="width:16px;height:16px;flex-shrink:0;margin-top:1px;color:#fca5a5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
@@ -261,6 +288,14 @@ $(document).ready(function() {
   });
 });
 
+// ── Troca de abas ───────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.getElementById('tab-painel').style.display = name === 'painel' ? '' : 'none';
+  document.getElementById('tab-guia').style.display   = name === 'guia'   ? '' : 'none';
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 // ── Tema claro/escuro ────────────────────────────────────────────
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
@@ -295,6 +330,172 @@ function toggleTheme() {
   applyTheme(pref);
 })();
 </script>
+
+</div><!-- /tab-painel -->
+
+<!-- ═══ GUIA DE LEITURA ═══ -->
+<div id="tab-guia" style="display:none">
+
+  <p class="desc" style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.7">Este guia explica cada indicador do painel, seus thresholds de alerta e a ação recomendada para a gestão. Use-o como referência toda semana ao analisar os resultados.</p>
+
+  <p class="section-title">Indicadores Principais (KPIs)</p>
+  <div class="guide-grid">
+
+    <div class="guide-card">
+      <h4>📊 Share of Voice</h4>
+      <p class="desc">Percentual das buscas locais monitoradas em que a Fox aparece no Top 10 do Google. É o termômetro geral da visibilidade regional — um número resume o impacto de todas as ações de SEO.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>≥ 60%</td><td>Liderança regional consolidada</td></tr>
+        <tr><td>🟡</td><td>30–60%</td><td>Crescimento ativo — priorizar criação de LPs</td></tr>
+        <tr><td>🔴</td><td>&lt; 30%</td><td>Crítico — concorrentes dominam as buscas</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Aprovar a criação das landing pages do plano de expansão. Cada LP publicada aumenta o SOV em ~0,5–1 ponto percentual.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>🌐 Cobertura Local</h4>
+      <p class="desc">% das combinações cidade × serviço que já possuem página dedicada no site. Uma cobertura baixa significa oportunidades de tráfego orgânico não aproveitadas.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>≥ 70%</td><td>Presença digital bem distribuída</td></tr>
+        <tr><td>🟡</td><td>30–70%</td><td>Expansão em andamento</td></tr>
+        <tr><td>🔴</td><td>&lt; 30%</td><td>Alta perda de tráfego potencial</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Consultar a tabela "Plano de Expansão" para ver quais combinações estão ausentes por cidade e priorizar as de maior volume de busca.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>🏗️ Landing Pages a Criar</h4>
+      <p class="desc">Número de páginas cidade × serviço recomendadas pelo sistema que ainda não existem no site. Cada página ausente é uma busca local que a Fox perde para concorrentes.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>0–20</td><td>Lacunas mínimas</td></tr>
+        <tr><td>🟡</td><td>20–60</td><td>Expansão necessária</td></tr>
+        <tr><td>🔴</td><td>&gt; 60</td><td>Grande oportunidade inexplorada</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Usar os schemas JSON-LD e FAQs gerados em <code>output/5_schemas_jsonld_sugeridos.json</code> para agilizar a publicação das páginas.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>🏷️ Páginas sem Schema.org</h4>
+      <p class="desc">Quantidade de páginas sem marcação estruturada (Schema.org tipo AutoRepair ou LocalBusiness). Páginas com schema têm até 20% mais chances de aparecer no Google Maps Pack.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>0–10</td><td>Cobertura de schema adequada</td></tr>
+        <tr><td>🟡</td><td>10–50</td><td>Implementação parcial</td></tr>
+        <tr><td>🔴</td><td>&gt; 50</td><td>Risco de queda no Maps Pack</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Repassar ao time de desenvolvimento o arquivo <code>output/5_schemas_jsonld_sugeridos.json</code> com os schemas prontos para inserção.</div>
+    </div>
+
+  </div>
+
+  <p class="section-title">Gráficos — Visibilidade e Concorrência</p>
+  <div class="guide-grid">
+
+    <div class="guide-card">
+      <h4>📍 Cobertura de Serviços por Cidade</h4>
+      <p class="desc">Barras empilhadas mostrando quantos serviços cada cidade já cobre (verde) versus quantos ainda faltam (vermelho). Permite comparar a maturidade digital de cada praça.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>Barra verde</td><td>Página já existe no site</td></tr>
+        <tr><td>🔴</td><td>Barra vermelha</td><td>Página ausente — oportunidade de criação</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Identificar as cidades com mais vermelho e priorizar a criação de LPs para elas primeiro — o ganho de tráfego é proporcional ao volume de busca na cidade.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>🏆 Top 10 Concorrentes Locais</h4>
+      <p class="desc">Domínios que aparecem com mais frequência nas buscas onde a Fox está ausente. Indica quem está capturando o tráfego que deveria ser da Fox.</p>
+      <table class="semaforo">
+        <tr><td>🔴</td><td>Concorrente direto</td><td>Outra loja de pneus / borracharia regional</td></tr>
+        <tr><td>🟡</td><td>Agregador</td><td>OLX, iCarros, Mercado Livre — baixa ameaça</td></tr>
+        <tr><td>🟢</td><td>Sem concorrente</td><td>Oportunidade de liderança isolada</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Para cada concorrente direto no top 3, analisar quais cidades e serviços ele domina e criar LPs específicas para essas combinações.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>📈 Evolução Semanal de KPIs</h4>
+      <p class="desc">Histórico das últimas 52 semanas dos principais indicadores. Permite avaliar se as ações tomadas estão gerando resultado e identificar sazonalidade.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>Tendência ↑</td><td>Ações surtindo efeito</td></tr>
+        <tr><td>🟡</td><td>Estável</td><td>Manutenção — sem crescimento</td></tr>
+        <tr><td>🔴</td><td>Tendência ↓</td><td>Revisar estratégia imediatamente</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Comparar as semanas após publicação de novas páginas com as anteriores — o efeito SEO típico aparece em 4–8 semanas após a publicação.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>📉 Share of Voice — Histórico</h4>
+      <p class="desc">Evolução semanal do SOV com linha de meta em 60%. Mostra a progressão da visibilidade regional ao longo do tempo e o quanto falta para atingir liderança.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>Acima da meta</td><td>SOV ≥ 60% — liderança confirmada</td></tr>
+        <tr><td>🟡</td><td>Abaixo da meta</td><td>Crescendo em direção à meta</td></tr>
+        <tr><td>🔴</td><td>Queda</td><td>Concorrente publicou mais páginas — reação necessária</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>A meta de 60% deve ser alcançada em 12–18 meses com publicação consistente de LPs. Revisar a cadência de publicação se o crescimento semanal for menor que 0,5 pontos.</div>
+    </div>
+
+  </div>
+
+  <p class="section-title">Gráficos — Desempenho Técnico e Reputação</p>
+  <div class="guide-grid">
+
+    <div class="guide-card">
+      <h4>⚡ Core Web Vitals (Mobile)</h4>
+      <p class="desc">Métricas de velocidade e experiência do usuário medidas pelo Google. Páginas lentas são penalizadas no ranking — o Google usa esses dados como fator de classificação direto.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>LCP ≤ 2,5s</td><td>Bom — sem penalização</td></tr>
+        <tr><td>🟡</td><td>2,5s–4s</td><td>Precisa melhorar</td></tr>
+        <tr><td>🔴</td><td>&gt; 4s</td><td>Penalização ativa no Google</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Páginas com LCP &gt; 4s (ex: Ariquemes — 14,3s) devem ser tratadas como prioridade técnica. Causas comuns: imagens sem compressão, sem CDN, scripts bloqueantes.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>⭐ Avaliações Google por Unidade</h4>
+      <p class="desc">Rating médio e volume de avaliações de cada unidade no Google Maps. O Google prioriza no Maps Pack negócios com rating ≥ 4,0 e volume crescente de avaliações.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>≥ 4,5 ⭐</td><td>Prioridade máxima no Maps Pack</td></tr>
+        <tr><td>🟡</td><td>4,0–4,5 ⭐</td><td>Atenção — estimular novas avaliações</td></tr>
+        <tr><td>🔴</td><td>&lt; 4,0 ⭐</td><td>Risco de queda no Maps Pack</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Unidades em alerta devem ativar campanha de solicitação de avaliações (WhatsApp pós-atendimento). Meta: 5+ avaliações novas por semana por unidade.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>🔵 Saúde Técnica On-Page</h4>
+      <p class="desc">Proporção de páginas com Schema.org implementado versus sem schema. O gráfico de rosca mostra rapidamente se a presença técnica estruturada está adequada.</p>
+      <table class="semaforo">
+        <tr><td>🟢</td><td>&gt; 70% com schema</td><td>Cobertura estruturada adequada</td></tr>
+        <tr><td>🟡</td><td>30–70%</td><td>Implementação parcial</td></tr>
+        <tr><td>🔴</td><td>&lt; 30%</td><td>Alta exposição a perda de posição</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Implementar os schemas do arquivo <code>output/5_schemas_jsonld_sugeridos.json</code> nas páginas de unidades como prioridade — são os schemas com maior impacto no Maps Pack local.</div>
+    </div>
+
+    <div class="guide-card">
+      <h4>📋 Plano de Expansão</h4>
+      <p class="desc">Tabela completa com todas as landing pages recomendadas, incluindo URL sugerida, Title SEO e Meta Description prontos para implementação pelo time de desenvolvimento.</p>
+      <table class="semaforo">
+        <tr><td>🔴</td><td>✗ Ausente</td><td>Página ainda não existe — criar</td></tr>
+        <tr><td>🟢</td><td>✓ Existe</td><td>Página já publicada — monitorar posição</td></tr>
+      </table>
+      <div class="guide-action"><strong>Ação recomendada</strong>Exportar via botão "Exportar Excel" e repassar ao time de conteúdo. Prioridade: cidades com maior população (Manaus, Porto Velho) e serviços de alta busca (pneus, alinhamento).</div>
+    </div>
+
+  </div>
+
+  <p class="section-title">Cadência e Governança</p>
+  <div class="guide-card" style="max-width:100%">
+    <h4>🗓️ Como usar este painel semanalmente</h4>
+    <p class="desc">Roteiro de 10 minutos para a reunião semanal de gestão digital.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:4px">
+      <div class="guide-action"><strong>1. Verificar SOV (meta: 60%)</strong>Cresceu em relação à semana anterior? Se não, quantas LPs foram publicadas? Publicar ao menos 2 LPs por semana para manter crescimento.</div>
+      <div class="guide-action"><strong>2. Alertas de Reviews</strong>Alguma unidade em vermelho (rating &lt; 4,0)? Acionar gerente local para campanha de avaliações antes de perder posição no Maps Pack.</div>
+      <div class="guide-action"><strong>3. Core Web Vitals</strong>Alguma página com LCP &gt; 4s? Abrir chamado técnico com prioridade alta — penalização do Google começa imediatamente.</div>
+      <div class="guide-action"><strong>4. Plano de Expansão</strong>Verificar quantas LPs novas foram publicadas desde a última semana. Meta: reduzir o número de "Ausente" em pelo menos 2 por semana.</div>
+    </div>
+  </div>
+
+</div><!-- /tab-guia -->
 
 <!-- Footer -->
 <footer style="margin-top:48px;padding:20px 0 28px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
