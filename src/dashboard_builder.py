@@ -403,7 +403,7 @@ def _chart_historico(df_hist: pd.DataFrame | None) -> str | None:
         return None
     fig = go.Figure(traces)
     fig.update_layout(height=320, margin=dict(t=20, b=40, l=20, r=20),
-                      xaxis=dict(type="date", dtick=86400000, tickformat="%d/%m/%y"))
+                      xaxis=dict(type="date", dtick=86400000, tickformat="%d %b"))
     return fig.to_json()
 
 
@@ -436,7 +436,7 @@ def _chart_sov(df_hist: pd.DataFrame | None, sov_atual: float) -> str | None:
     fig.add_hline(y=60, line_dash="dash", line_color="#22c55e",
                   annotation_text="Meta 60%")
     fig.update_layout(height=320, margin=dict(t=20, b=40, l=20, r=20),
-                      xaxis=dict(type="date", dtick=86400000, tickformat="%d/%m/%y"),
+                      xaxis=dict(type="date", dtick=86400000, tickformat="%d %b"),
                       yaxis=dict(range=[0, 100]))
     return fig.to_json()
 
