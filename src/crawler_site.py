@@ -142,12 +142,25 @@ def _fetch_page(url: str, client: httpx.Client, rp: RobotFileParser) -> dict:
             pass
 
         try:
+            TARGET_SCHEMA_TYPES = {"AutoRepair", "LocalBusiness", "AutoDealer"}
             schemas = extruct.extract(html, base_url=url, syntaxes=["json-ld"])
             for item in schemas.get("json-ld", []):
+                # Verificar @type direto
                 tipo = item.get("@type", "")
-                if tipo in ("AutoRepair", "LocalBusiness", "AutoDealer"):
+                tipos = [tipo] if isinstance(tipo, str) else (tipo if isinstance(tipo, list) else [])
+                if any(t in TARGET_SCHEMA_TYPES for t in tipos):
                     result["tem_schema"] = True
-                    result["tipo_schema"] = tipo
+                    result["tipo_schema"] = tipos[0] if tipos else tipo
+                    break
+                # Verificar @graph (padrão WordPress/RankMath/Yoast)
+                for graph_item in item.get("@graph", []):
+                    g_tipo = graph_item.get("@type", "")
+                    g_tipos = [g_tipo] if isinstance(g_tipo, str) else (g_tipo if isinstance(g_tipo, list) else [])
+                    if any(t in TARGET_SCHEMA_TYPES for t in g_tipos):
+                        result["tem_schema"] = True
+                        result["tipo_schema"] = g_tipos[0] if g_tipos else g_tipo
+                        break
+                if result["tem_schema"]:
                     break
         except Exception:
             pass
