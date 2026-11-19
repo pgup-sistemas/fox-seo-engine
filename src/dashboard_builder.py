@@ -82,7 +82,13 @@ TEMPLATE = """<!DOCTYPE html>
   .guide-card .desc { font-size:12px; color:var(--muted); margin:0 0 14px; line-height:1.6; }
   .semaforo { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:14px; }
   .semaforo td { padding:5px 8px; border-bottom:1px solid var(--border); }
-  .semaforo td:first-child { width:28px; text-align:center; }
+  .semaforo td:first-child { width:28px; text-align:center; vertical-align:middle; }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .dot-g { background:#22c55e; }
+  .dot-y { background:#eab308; }
+  .dot-r { background:#ef4444; }
+  .guide-card h4 { display:flex; align-items:center; gap:8px; }
+  .guide-card h4 svg { flex-shrink:0; }
   .semaforo td:nth-child(2) { font-weight:600; width:90px; }
   .semaforo tr:last-child td { border-bottom:none; }
   .guide-action { background:var(--bg); border-left:3px solid var(--fox-red); padding:8px 12px; border-radius:0 6px 6px 0; font-size:12px; color:var(--text); line-height:1.6; }
@@ -98,15 +104,24 @@ TEMPLATE = """<!DOCTYPE html>
     <p class="text-sm" style="color:var(--muted)">Gerado em {{ gerado_em }} &nbsp;·&nbsp; Atualizado toda segunda-feira às 4h BRT</p>
   </div>
   <button id="theme-toggle" onclick="toggleTheme()">
-    <span id="theme-icon">🌙</span>
+    <span id="theme-icon">
+      <svg id="icon-moon" style="width:14px;height:14px;display:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+      <svg id="icon-sun" style="width:14px;height:14px;display:none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+    </span>
     <span id="theme-label">Tema Claro</span>
   </button>
 </div>
 
 <!-- Tab bar -->
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('painel',this)">📊 Painel</button>
-  <button class="tab-btn" onclick="switchTab('guia',this)">📖 Guia de Leitura</button>
+  <button class="tab-btn active" onclick="switchTab('painel',this)" style="display:flex;align-items:center;gap:6px">
+    <svg style="width:14px;height:14px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
+    Painel
+  </button>
+  <button class="tab-btn" onclick="switchTab('guia',this)" style="display:flex;align-items:center;gap:6px">
+    <svg style="width:14px;height:14px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+    Guia de Leitura
+  </button>
 </div>
 
 <!-- ═══ PAINEL ═══ -->
@@ -264,8 +279,8 @@ $(document).ready(function() {
     columns: [
       { data: 'Cidade' }, { data: 'UF' }, { data: 'Servico' },
       { data: 'Status_Atual', render: d => d === 'existe'
-        ? '<span style="color:#86efac">✓ Existe</span>'
-        : '<span style="color:#fca5a5">✗ Ausente</span>' },
+        ? '<span style="color:#86efac;display:inline-flex;align-items:center;gap:3px"><svg style="width:12px;height:12px" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>Existe</span>'
+        : '<span style="color:#fca5a5;display:inline-flex;align-items:center;gap:3px"><svg style="width:12px;height:12px" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>Ausente</span>' },
       { data: 'URL_Sugerida', render: d => `<a href="${d}" target="_blank" style="color:#60a5fa;word-break:break-all">${d}</a>` },
       { data: 'Title_SEO' },
     ],
@@ -300,7 +315,8 @@ function switchTab(name, btn) {
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   const isLight = theme === 'light';
-  document.getElementById('theme-icon').textContent = isLight ? '🌙' : '☀️';
+  document.getElementById('icon-moon').style.display = isLight ? 'block' : 'none';
+  document.getElementById('icon-sun').style.display  = isLight ? 'none'  : 'block';
   document.getElementById('theme-label').textContent = isLight ? 'Tema Escuro' : 'Tema Claro';
 
   // Re-render Plotly charts com cores do tema atual
@@ -342,45 +358,45 @@ function toggleTheme() {
   <div class="guide-grid">
 
     <div class="guide-card">
-      <h4>📊 Share of Voice</h4>
+      <h4><svg style="width:15px;height:15px;color:#e31b23" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>Share of Voice</h4>
       <p class="desc">Percentual das buscas locais monitoradas em que a Fox aparece no Top 10 do Google. É o termômetro geral da visibilidade regional — um número resume o impacto de todas as ações de SEO.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>≥ 60%</td><td>Liderança regional consolidada</td></tr>
-        <tr><td>🟡</td><td>30–60%</td><td>Crescimento ativo — priorizar criação de LPs</td></tr>
-        <tr><td>🔴</td><td>&lt; 30%</td><td>Crítico — concorrentes dominam as buscas</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>≥ 60%</td><td>Liderança regional consolidada</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>30–60%</td><td>Crescimento ativo — priorizar criação de LPs</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Crítico — concorrentes dominam as buscas</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Aprovar a criação das landing pages do plano de expansão. Cada LP publicada aumenta o SOV em ~0,5–1 ponto percentual.</div>
     </div>
 
     <div class="guide-card">
-      <h4>🌐 Cobertura Local</h4>
+      <h4><svg style="width:15px;height:15px;color:#3b82f6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>Cobertura Local</h4>
       <p class="desc">% das combinações cidade × serviço que já possuem página dedicada no site. Uma cobertura baixa significa oportunidades de tráfego orgânico não aproveitadas.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>≥ 70%</td><td>Presença digital bem distribuída</td></tr>
-        <tr><td>🟡</td><td>30–70%</td><td>Expansão em andamento</td></tr>
-        <tr><td>🔴</td><td>&lt; 30%</td><td>Alta perda de tráfego potencial</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>≥ 70%</td><td>Presença digital bem distribuída</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>30–70%</td><td>Expansão em andamento</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Alta perda de tráfego potencial</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Consultar a tabela "Plano de Expansão" para ver quais combinações estão ausentes por cidade e priorizar as de maior volume de busca.</div>
     </div>
 
     <div class="guide-card">
-      <h4>🏗️ Landing Pages a Criar</h4>
+      <h4><svg style="width:15px;height:15px;color:#34d399" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Landing Pages a Criar</h4>
       <p class="desc">Número de páginas cidade × serviço recomendadas pelo sistema que ainda não existem no site. Cada página ausente é uma busca local que a Fox perde para concorrentes.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>0–20</td><td>Lacunas mínimas</td></tr>
-        <tr><td>🟡</td><td>20–60</td><td>Expansão necessária</td></tr>
-        <tr><td>🔴</td><td>&gt; 60</td><td>Grande oportunidade inexplorada</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>0–20</td><td>Lacunas mínimas</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>20–60</td><td>Expansão necessária</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>&gt; 60</td><td>Grande oportunidade inexplorada</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Usar os schemas JSON-LD e FAQs gerados em <code>output/5_schemas_jsonld_sugeridos.json</code> para agilizar a publicação das páginas.</div>
     </div>
 
     <div class="guide-card">
-      <h4>🏷️ Páginas sem Schema.org</h4>
+      <h4><svg style="width:15px;height:15px;color:#fbbf24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>Páginas sem Schema.org</h4>
       <p class="desc">Quantidade de páginas sem marcação estruturada (Schema.org tipo AutoRepair ou LocalBusiness). Páginas com schema têm até 20% mais chances de aparecer no Google Maps Pack.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>0–10</td><td>Cobertura de schema adequada</td></tr>
-        <tr><td>🟡</td><td>10–50</td><td>Implementação parcial</td></tr>
-        <tr><td>🔴</td><td>&gt; 50</td><td>Risco de queda no Maps Pack</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>0–10</td><td>Cobertura de schema adequada</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>10–50</td><td>Implementação parcial</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>&gt; 50</td><td>Risco de queda no Maps Pack</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Repassar ao time de desenvolvimento o arquivo <code>output/5_schemas_jsonld_sugeridos.json</code> com os schemas prontos para inserção.</div>
     </div>
@@ -391,44 +407,44 @@ function toggleTheme() {
   <div class="guide-grid">
 
     <div class="guide-card">
-      <h4>📍 Cobertura de Serviços por Cidade</h4>
+      <h4><svg style="width:15px;height:15px;color:#34d399" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg>Cobertura de Serviços por Cidade</h4>
       <p class="desc">Barras empilhadas mostrando quantos serviços cada cidade já cobre (verde) versus quantos ainda faltam (vermelho). Permite comparar a maturidade digital de cada praça.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>Barra verde</td><td>Página já existe no site</td></tr>
-        <tr><td>🔴</td><td>Barra vermelha</td><td>Página ausente — oportunidade de criação</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>Barra verde</td><td>Página já existe no site</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>Barra vermelha</td><td>Página ausente — oportunidade de criação</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Identificar as cidades com mais vermelho e priorizar a criação de LPs para elas primeiro — o ganho de tráfego é proporcional ao volume de busca na cidade.</div>
     </div>
 
     <div class="guide-card">
-      <h4>🏆 Top 10 Concorrentes Locais</h4>
+      <h4><svg style="width:15px;height:15px;color:#e31b23" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"/></svg>Top 10 Concorrentes Locais</h4>
       <p class="desc">Domínios que aparecem com mais frequência nas buscas onde a Fox está ausente. Indica quem está capturando o tráfego que deveria ser da Fox.</p>
       <table class="semaforo">
-        <tr><td>🔴</td><td>Concorrente direto</td><td>Outra loja de pneus / borracharia regional</td></tr>
-        <tr><td>🟡</td><td>Agregador</td><td>OLX, iCarros, Mercado Livre — baixa ameaça</td></tr>
-        <tr><td>🟢</td><td>Sem concorrente</td><td>Oportunidade de liderança isolada</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>Concorrente direto</td><td>Outra loja de pneus / borracharia regional</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>Agregador</td><td>OLX, iCarros, Mercado Livre — baixa ameaça</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>Sem concorrente</td><td>Oportunidade de liderança isolada</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Para cada concorrente direto no top 3, analisar quais cidades e serviços ele domina e criar LPs específicas para essas combinações.</div>
     </div>
 
     <div class="guide-card">
-      <h4>📈 Evolução Semanal de KPIs</h4>
+      <h4><svg style="width:15px;height:15px;color:#a78bfa" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>Evolução Semanal de KPIs</h4>
       <p class="desc">Histórico das últimas 52 semanas dos principais indicadores. Permite avaliar se as ações tomadas estão gerando resultado e identificar sazonalidade.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>Tendência ↑</td><td>Ações surtindo efeito</td></tr>
-        <tr><td>🟡</td><td>Estável</td><td>Manutenção — sem crescimento</td></tr>
-        <tr><td>🔴</td><td>Tendência ↓</td><td>Revisar estratégia imediatamente</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>Tendência ↑</td><td>Ações surtindo efeito</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>Estável</td><td>Manutenção — sem crescimento</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>Tendência ↓</td><td>Revisar estratégia imediatamente</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Comparar as semanas após publicação de novas páginas com as anteriores — o efeito SEO típico aparece em 4–8 semanas após a publicação.</div>
     </div>
 
     <div class="guide-card">
-      <h4>📉 Share of Voice — Histórico</h4>
+      <h4><svg style="width:15px;height:15px;color:#38bdf8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>Share of Voice — Histórico</h4>
       <p class="desc">Evolução semanal do SOV com linha de meta em 60%. Mostra a progressão da visibilidade regional ao longo do tempo e o quanto falta para atingir liderança.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>Acima da meta</td><td>SOV ≥ 60% — liderança confirmada</td></tr>
-        <tr><td>🟡</td><td>Abaixo da meta</td><td>Crescendo em direção à meta</td></tr>
-        <tr><td>🔴</td><td>Queda</td><td>Concorrente publicou mais páginas — reação necessária</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>Acima da meta</td><td>SOV ≥ 60% — liderança confirmada</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>Abaixo da meta</td><td>Crescendo em direção à meta</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>Queda</td><td>Concorrente publicou mais páginas — reação necessária</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>A meta de 60% deve ser alcançada em 12–18 meses com publicação consistente de LPs. Revisar a cadência de publicação se o crescimento semanal for menor que 0,5 pontos.</div>
     </div>
@@ -439,44 +455,44 @@ function toggleTheme() {
   <div class="guide-grid">
 
     <div class="guide-card">
-      <h4>⚡ Core Web Vitals (Mobile)</h4>
+      <h4><svg style="width:15px;height:15px;color:#fbbf24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>Core Web Vitals (Mobile)</h4>
       <p class="desc">Métricas de velocidade e experiência do usuário medidas pelo Google. Páginas lentas são penalizadas no ranking — o Google usa esses dados como fator de classificação direto.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>LCP ≤ 2,5s</td><td>Bom — sem penalização</td></tr>
-        <tr><td>🟡</td><td>2,5s–4s</td><td>Precisa melhorar</td></tr>
-        <tr><td>🔴</td><td>&gt; 4s</td><td>Penalização ativa no Google</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>LCP ≤ 2,5s</td><td>Bom — sem penalização</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>2,5s–4s</td><td>Precisa melhorar</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>&gt; 4s</td><td>Penalização ativa no Google</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Páginas com LCP &gt; 4s (ex: Ariquemes — 14,3s) devem ser tratadas como prioridade técnica. Causas comuns: imagens sem compressão, sem CDN, scripts bloqueantes.</div>
     </div>
 
     <div class="guide-card">
-      <h4>⭐ Avaliações Google por Unidade</h4>
+      <h4><svg style="width:15px;height:15px;color:#fbbf24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>Avaliações Google por Unidade</h4>
       <p class="desc">Rating médio e volume de avaliações de cada unidade no Google Maps. O Google prioriza no Maps Pack negócios com rating ≥ 4,0 e volume crescente de avaliações.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>≥ 4,5 ⭐</td><td>Prioridade máxima no Maps Pack</td></tr>
-        <tr><td>🟡</td><td>4,0–4,5 ⭐</td><td>Atenção — estimular novas avaliações</td></tr>
-        <tr><td>🔴</td><td>&lt; 4,0 ⭐</td><td>Risco de queda no Maps Pack</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>≥ 4,5</td><td>Prioridade máxima no Maps Pack</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>4,0–4,5</td><td>Atenção — estimular novas avaliações</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>&lt; 4,0</td><td>Risco de queda no Maps Pack</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Unidades em alerta devem ativar campanha de solicitação de avaliações (WhatsApp pós-atendimento). Meta: 5+ avaliações novas por semana por unidade.</div>
     </div>
 
     <div class="guide-card">
-      <h4>🔵 Saúde Técnica On-Page</h4>
+      <h4><svg style="width:15px;height:15px;color:#3b82f6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>Saúde Técnica On-Page</h4>
       <p class="desc">Proporção de páginas com Schema.org implementado versus sem schema. O gráfico de rosca mostra rapidamente se a presença técnica estruturada está adequada.</p>
       <table class="semaforo">
-        <tr><td>🟢</td><td>&gt; 70% com schema</td><td>Cobertura estruturada adequada</td></tr>
-        <tr><td>🟡</td><td>30–70%</td><td>Implementação parcial</td></tr>
-        <tr><td>🔴</td><td>&lt; 30%</td><td>Alta exposição a perda de posição</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>&gt; 70% schema</td><td>Cobertura estruturada adequada</td></tr>
+        <tr><td><span class="dot dot-y"></span></td><td>30–70%</td><td>Implementação parcial</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Alta exposição a perda de posição</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Implementar os schemas do arquivo <code>output/5_schemas_jsonld_sugeridos.json</code> nas páginas de unidades como prioridade — são os schemas com maior impacto no Maps Pack local.</div>
     </div>
 
     <div class="guide-card">
-      <h4>📋 Plano de Expansão</h4>
+      <h4><svg style="width:15px;height:15px;color:#34d399" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>Plano de Expansão</h4>
       <p class="desc">Tabela completa com todas as landing pages recomendadas, incluindo URL sugerida, Title SEO e Meta Description prontos para implementação pelo time de desenvolvimento.</p>
       <table class="semaforo">
-        <tr><td>🔴</td><td>✗ Ausente</td><td>Página ainda não existe — criar</td></tr>
-        <tr><td>🟢</td><td>✓ Existe</td><td>Página já publicada — monitorar posição</td></tr>
+        <tr><td><span class="dot dot-r"></span></td><td>Ausente</td><td>Página ainda não existe — criar</td></tr>
+        <tr><td><span class="dot dot-g"></span></td><td>Existe</td><td>Página já publicada — monitorar posição</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Exportar via botão "Exportar Excel" e repassar ao time de conteúdo. Prioridade: cidades com maior população (Manaus, Porto Velho) e serviços de alta busca (pneus, alinhamento).</div>
     </div>
@@ -485,7 +501,7 @@ function toggleTheme() {
 
   <p class="section-title">Cadência e Governança</p>
   <div class="guide-card" style="max-width:100%">
-    <h4>🗓️ Como usar este painel semanalmente</h4>
+    <h4><svg style="width:15px;height:15px;color:#e31b23" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>Como usar este painel semanalmente</h4>
     <p class="desc">Roteiro de 10 minutos para a reunião semanal de gestão digital.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:4px">
       <div class="guide-action"><strong>1. Verificar SOV (meta: 60%)</strong>Cresceu em relação à semana anterior? Se não, quantas LPs foram publicadas? Publicar ao menos 2 LPs por semana para manter crescimento.</div>
