@@ -539,15 +539,15 @@ function renderLPs(cidade) {
   if (!rows.length) { tbody.innerHTML = ''; empty.style.display=''; return; }
   empty.style.display = 'none';
   tbody.innerHTML = rows.slice(0,150).map(function(d) {
-    var esc = function(s){ return (s||'').replace(/'/g,"\\\\'").replace(/"/g,'&quot;'); };
+    var enc = function(s){ return encodeURIComponent(s||''); };
     return '<tr style="border-bottom:1px solid var(--border)">' +
       '<td style="padding:8px 10px;white-space:nowrap">' + d.Cidade + '</td>' +
       '<td style="padding:8px 10px">' + d.Servico + '</td>' +
       '<td style="padding:8px 10px"><a href="' + d.URL_Sugerida + '" target="_blank" style="color:#60a5fa;font-size:11px;word-break:break-all">' + d.URL_Sugerida + '</a></td>' +
       '<td style="padding:8px 10px;max-width:220px;font-size:11px">' + d.Title_SEO + '</td>' +
       '<td style="padding:8px 10px;white-space:nowrap">' +
-        '<button onclick="copyText(\'' + esc(d.Title_SEO) + '\',this)" class="copy-btn-sm">Title</button> ' +
-        '<button onclick="copyText(\'' + esc(d.Meta_Description) + '\',this)" class="copy-btn-sm">Meta</button>' +
+        '<button onclick="copyEnc(this)" data-v="' + enc(d.Title_SEO) + '" class="copy-btn-sm">Title</button> ' +
+        '<button onclick="copyEnc(this)" data-v="' + enc(d.Meta_Description) + '" class="copy-btn-sm">Meta</button>' +
       '</td></tr>';
   }).join('');
 }
@@ -566,6 +566,10 @@ function copyText(text, btn) {
   navigator.clipboard.writeText(text).then(function() {
     var orig = btn.textContent; btn.textContent = '✓'; setTimeout(function(){ btn.textContent = orig; }, 1500);
   });
+}
+
+function copyEnc(btn) {
+  copyText(decodeURIComponent(btn.getAttribute('data-v')), btn);
 }
 </script>
 
