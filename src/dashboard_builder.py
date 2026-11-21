@@ -94,6 +94,14 @@ TEMPLATE = """<!DOCTYPE html>
   .guide-action { background:var(--bg); border-left:3px solid var(--fox-red); padding:8px 12px; border-radius:0 6px 6px 0; font-size:12px; color:var(--text); line-height:1.6; }
   .guide-action strong { color:var(--fox-red); display:block; margin-bottom:2px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
   .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:28px 0 12px; }
+  /* Guia Dev */
+  .code-block { background:#0d1117; border:1px solid var(--border); border-radius:8px; padding:16px; font-family:monospace; font-size:11.5px; line-height:1.7; color:#e6edf3; overflow-x:auto; white-space:pre; max-height:380px; overflow-y:auto; margin:0; }
+  .dev-select { background:var(--input-bg); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:7px 12px; font-size:13px; min-width:220px; cursor:pointer; }
+  .copy-btn { display:inline-flex; align-items:center; gap:5px; background:var(--fox-red); color:#fff; border:none; border-radius:6px; padding:7px 14px; font-size:12px; font-weight:600; cursor:pointer; transition:background .15s; white-space:nowrap; }
+  .copy-btn:hover { background:var(--fox-red-dark); }
+  .copy-btn-sm { background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:4px; padding:3px 8px; font-size:11px; cursor:pointer; transition:background .15s; }
+  .copy-btn-sm:hover { background:var(--hover); }
+  .step-num { width:28px; height:28px; border-radius:50%; background:var(--fox-red); color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 </style>
 </head>
 <body class="p-6">
@@ -117,6 +125,10 @@ TEMPLATE = """<!DOCTYPE html>
   <button class="tab-btn active" onclick="switchTab('painel',this)" style="display:flex;align-items:center;gap:6px">
     <svg style="width:14px;height:14px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
     Painel
+  </button>
+  <button class="tab-btn" onclick="switchTab('dev',this)" style="display:flex;align-items:center;gap:6px">
+    <svg style="width:14px;height:14px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+    Guia Dev
   </button>
   <button class="tab-btn" onclick="switchTab('guia',this)" style="display:flex;align-items:center;gap:6px">
     <svg style="width:14px;height:14px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
@@ -306,6 +318,7 @@ $(document).ready(function() {
 // ── Troca de abas ───────────────────────────────────────────────
 function switchTab(name, btn) {
   document.getElementById('tab-painel').style.display = name === 'painel' ? '' : 'none';
+  document.getElementById('tab-dev').style.display    = name === 'dev'    ? '' : 'none';
   document.getElementById('tab-guia').style.display   = name === 'guia'   ? '' : 'none';
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -348,6 +361,215 @@ function toggleTheme() {
 </script>
 
 </div><!-- /tab-painel -->
+
+<!-- ═══ GUIA DEV ═══ -->
+<div id="tab-dev" style="display:none">
+
+<div style="background:var(--card);border-left:3px solid var(--fox-red);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:28px">
+  <p style="font-size:13px;margin:0;line-height:1.6"><strong style="color:var(--fox-red)">Central de Implementação</strong> — Schemas e landing pages gerados automaticamente em <strong>{{ gerado_em }}</strong>. Atualizado toda segunda-feira. Copie o código e cole diretamente no site.</p>
+</div>
+
+<!-- Seção 1: AutoRepair -->
+<p class="section-title">1. Schema AutoRepair — Páginas de Unidade</p>
+<div class="card p-6 mb-6">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Informa ao Google o que a unidade é, onde fica e quais serviços oferece. Páginas com este schema têm <strong style="color:var(--text)">até 20% mais chance</strong> de aparecer no Google Maps Pack. Inserir uma vez por página de unidade.</p>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+    <select id="sel-unidade" onchange="showAutoRepair(this.value)" class="dev-select">
+      <option value="">— Selecione a unidade —</option>
+    </select>
+    <button onclick="copyCode('code-autorepair','btn-copy-ar')" id="btn-copy-ar" class="copy-btn">
+      <svg style="width:13px;height:13px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
+      Copiar código
+    </button>
+  </div>
+  <pre id="code-autorepair" class="code-block">← Selecione uma unidade acima para ver o código</pre>
+  <div id="url-hint-ar" class="guide-action" style="margin-top:12px;display:none">
+    <strong>Onde inserir no site</strong>
+    Dentro do <code>&lt;head&gt;</code> de <span id="url-ar-text" style="color:#60a5fa"></span> como: <code>&lt;script type="application/ld+json"&gt; ... &lt;/script&gt;</code>
+  </div>
+</div>
+
+<!-- Seção 2: FAQPage -->
+<p class="section-title">2. Schema FAQPage — Páginas de Serviço por Cidade</p>
+<div class="card p-6 mb-6">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Faz a Fox aparecer <strong style="color:var(--text)">duas vezes</strong> na mesma página de resultados do Google — no resultado orgânico normal e na caixa "Pessoas também perguntam". Inserir como <strong style="color:var(--text)">segundo bloco separado</strong> na mesma página, logo após o AutoRepair.</p>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+    <select id="sel-faq-cidade" onchange="filterFaqServico()" class="dev-select">
+      <option value="">— Selecione a cidade —</option>
+    </select>
+    <select id="sel-faq-servico" onchange="showFaq()" class="dev-select" disabled>
+      <option value="">— Selecione o serviço —</option>
+    </select>
+    <button onclick="copyCode('code-faq','btn-copy-faq')" id="btn-copy-faq" class="copy-btn">
+      <svg style="width:13px;height:13px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
+      Copiar código
+    </button>
+  </div>
+  <pre id="code-faq" class="code-block">← Selecione cidade e serviço acima para ver o código</pre>
+  <div id="url-hint-faq" class="guide-action" style="margin-top:12px;display:none">
+    <strong>Onde inserir</strong>
+    Na mesma página, como segundo bloco em <span id="url-faq-text" style="color:#60a5fa"></span>.
+    <span style="margin-left:8px">Validar em: <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">search.google.com/test/rich-results</a></span>
+  </div>
+</div>
+
+<!-- Seção 3: Checklist LPs -->
+<p class="section-title">3. Landing Pages a Criar — <span id="lp-count-dev" style="color:var(--fox-red)">0</span> pendentes</p>
+<div class="card p-6 mb-6">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Cada página criada aumenta o Share of Voice em ~0,5–1 ponto. Title SEO e Meta Description já estão prontos para colar no CMS.</p>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+    <select id="sel-lp-cidade" onchange="filterLPs()" class="dev-select">
+      <option value="">— Todas as cidades —</option>
+    </select>
+  </div>
+  <div style="overflow-x:auto">
+    <table id="tabela-dev" style="width:100%;font-size:12px;border-collapse:collapse">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border)">
+          <th style="text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;white-space:nowrap">Cidade</th>
+          <th style="text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;white-space:nowrap">Serviço</th>
+          <th style="text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;white-space:nowrap">URL</th>
+          <th style="text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;white-space:nowrap">Title SEO</th>
+          <th style="text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;white-space:nowrap">Copiar</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-dev-body"></tbody>
+    </table>
+  </div>
+  <p id="lp-empty" style="font-size:12px;color:var(--muted);text-align:center;padding:24px;display:none">Nenhuma LP pendente — todas as páginas já existem! 🎉</p>
+</div>
+
+<!-- Seção 4: Passo a passo -->
+<p class="section-title">4. Como implementar — Passo a passo</p>
+<div class="card p-6 mb-6">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px">
+    <div style="display:flex;gap:14px"><div class="step-num">1</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Criar a página no CMS</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Use a URL sugerida na tabela acima. Cole o Title SEO e a Meta Description já prontos. Publique o conteúdo.</p></div></div>
+    <div style="display:flex;gap:14px"><div class="step-num">2</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Inserir Schema AutoRepair</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Copie o código da Seção 1, cole no <code>&lt;head&gt;</code> da página como <code>&lt;script type="application/ld+json"&gt;</code>.</p></div></div>
+    <div style="display:flex;gap:14px"><div class="step-num">3</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Inserir Schema FAQPage</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Copie o código da Seção 2, cole como <strong>segundo bloco separado</strong> <code>&lt;script type="application/ld+json"&gt;</code> logo após o anterior.</p></div></div>
+    <div style="display:flex;gap:14px"><div class="step-num">4</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Validar no Google</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Acesse <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">search.google.com/test/rich-results</a>, cole a URL e confirme que AutoRepair e FAQPage foram reconhecidos.</p></div></div>
+  </div>
+</div>
+
+<script>
+window.schemasData = {{ schemas_data | tojson }};
+window.faqData     = {{ faq_data | tojson }};
+
+// ── AutoRepair ───────────────────────────────────────────────────
+(function() {
+  var sel = document.getElementById('sel-unidade');
+  (window.schemasData || []).forEach(function(s, i) {
+    var o = document.createElement('option'); o.value = i; o.textContent = s.name; sel.appendChild(o);
+  });
+})();
+
+function showAutoRepair(idx) {
+  var pre = document.getElementById('code-autorepair');
+  var hint = document.getElementById('url-hint-ar');
+  if (idx === '' || idx === undefined) { pre.textContent = '← Selecione uma unidade acima para ver o código'; hint.style.display='none'; return; }
+  var s = window.schemasData[parseInt(idx)];
+  pre.textContent = '<script type="application/ld+json">\\n' + JSON.stringify(s, null, 2) + '\\n<\\/script>';
+  hint.style.display = '';
+  document.getElementById('url-ar-text').textContent = s.url || '';
+}
+
+// ── FAQPage ──────────────────────────────────────────────────────
+(function() {
+  window._faqByCidade = {};
+  (window.faqData || []).forEach(function(f, i) {
+    var city = '';
+    if (f.mainEntity && f.mainEntity[0]) {
+      var m = f.mainEntity[0].name.match(/ em ([^?]+)\\??$/);
+      if (m) city = m[1].trim();
+    }
+    if (!city) city = 'Outros';
+    if (!window._faqByCidade[city]) window._faqByCidade[city] = [];
+    window._faqByCidade[city].push({idx: i, faq: f});
+  });
+  var sel = document.getElementById('sel-faq-cidade');
+  Object.keys(window._faqByCidade).sort().forEach(function(c) {
+    var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o);
+  });
+})();
+
+function filterFaqServico() {
+  var cidade = document.getElementById('sel-faq-cidade').value;
+  var selS = document.getElementById('sel-faq-servico');
+  selS.innerHTML = '<option value="">— Selecione o serviço —</option>';
+  document.getElementById('code-faq').textContent = '← Selecione cidade e serviço acima para ver o código';
+  document.getElementById('url-hint-faq').style.display = 'none';
+  if (!cidade) { selS.disabled = true; return; }
+  selS.disabled = false;
+  (window._faqByCidade[cidade] || []).forEach(function(item) {
+    var servico = '';
+    if (item.faq.mainEntity && item.faq.mainEntity[0]) {
+      var m = item.faq.mainEntity[0].name.match(/^Quanto custa (.+) em /);
+      if (m) servico = m[1].trim();
+    }
+    var o = document.createElement('option'); o.value = item.idx; o.textContent = servico || item.faq.url; selS.appendChild(o);
+  });
+}
+
+function showFaq() {
+  var idx = document.getElementById('sel-faq-servico').value;
+  var pre = document.getElementById('code-faq');
+  var hint = document.getElementById('url-hint-faq');
+  if (!idx) { pre.textContent = '← Selecione cidade e serviço acima para ver o código'; hint.style.display='none'; return; }
+  var f = window.faqData[parseInt(idx)];
+  pre.textContent = '<script type="application/ld+json">\\n' + JSON.stringify(f, null, 2) + '\\n<\\/script>';
+  hint.style.display = '';
+  document.getElementById('url-faq-text').textContent = f.url || '';
+}
+
+// ── Checklist LPs ────────────────────────────────────────────────
+(function() {
+  var ausentes = (window.expansionData || []).filter(function(d) { return d.Status_Atual !== 'existe'; });
+  document.getElementById('lp-count-dev').textContent = ausentes.length;
+  var cidades = ausentes.map(function(d) { return d.Cidade; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).sort();
+  var selC = document.getElementById('sel-lp-cidade');
+  cidades.forEach(function(c) { var o=document.createElement('option'); o.value=c; o.textContent=c; selC.appendChild(o); });
+  renderLPs('');
+})();
+
+function filterLPs() { renderLPs(document.getElementById('sel-lp-cidade').value); }
+
+function renderLPs(cidade) {
+  var rows = (window.expansionData || []).filter(function(d) { return d.Status_Atual !== 'existe' && (!cidade || d.Cidade === cidade); });
+  var tbody = document.getElementById('tabela-dev-body');
+  var empty = document.getElementById('lp-empty');
+  if (!rows.length) { tbody.innerHTML = ''; empty.style.display=''; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = rows.slice(0,150).map(function(d) {
+    var esc = function(s){ return (s||'').replace(/'/g,"\\\\'").replace(/"/g,'&quot;'); };
+    return '<tr style="border-bottom:1px solid var(--border)">' +
+      '<td style="padding:8px 10px;white-space:nowrap">' + d.Cidade + '</td>' +
+      '<td style="padding:8px 10px">' + d.Servico + '</td>' +
+      '<td style="padding:8px 10px"><a href="' + d.URL_Sugerida + '" target="_blank" style="color:#60a5fa;font-size:11px;word-break:break-all">' + d.URL_Sugerida + '</a></td>' +
+      '<td style="padding:8px 10px;max-width:220px;font-size:11px">' + d.Title_SEO + '</td>' +
+      '<td style="padding:8px 10px;white-space:nowrap">' +
+        '<button onclick="copyText(\'' + esc(d.Title_SEO) + '\',this)" class="copy-btn-sm">Title</button> ' +
+        '<button onclick="copyText(\'' + esc(d.Meta_Description) + '\',this)" class="copy-btn-sm">Meta</button>' +
+      '</td></tr>';
+  }).join('');
+}
+
+// ── Helpers ──────────────────────────────────────────────────────
+function copyCode(preId, btnId) {
+  var text = document.getElementById(preId).textContent;
+  if (!text || text.startsWith('←')) return;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById(btnId);
+    if (btn) { var orig = btn.innerHTML; btn.textContent = '✓ Copiado!'; setTimeout(function(){ btn.innerHTML = orig; }, 2000); }
+  }).catch(function(){ alert('Selecione o código (Ctrl+A) e copie manualmente.'); });
+}
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(function() {
+    var orig = btn.textContent; btn.textContent = '✓'; setTimeout(function(){ btn.textContent = orig; }, 1500);
+  });
+}
+</script>
+
+</div><!-- /tab-dev -->
 
 <!-- ═══ GUIA DE LEITURA ═══ -->
 <div id="tab-guia" style="display:none">
@@ -772,6 +994,21 @@ def run():
 
     expansion_data = df_expansion.to_dict(orient="records") if df_expansion is not None else []
 
+    schemas_data = []
+    faq_data = []
+    for path, target in [("output/5_schemas_jsonld_sugeridos.json", "schemas_data"),
+                          ("output/5b_schemas_faqpage_sugeridos.json", "faq_data")]:
+        p = Path(path)
+        if p.exists():
+            try:
+                val = json.loads(p.read_text(encoding="utf-8"))
+                if target == "schemas_data":
+                    schemas_data = val
+                else:
+                    faq_data = val
+            except Exception as e:
+                logger.warning("Erro ao carregar %s: %s", path, e)
+
     template = Template(TEMPLATE)
     html = template.render(
         gerado_em=datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -779,6 +1016,8 @@ def run():
         kpis=kpis,
         charts_json=json.dumps(charts, ensure_ascii=False),
         expansion_data=expansion_data,
+        schemas_data=schemas_data,
+        faq_data=faq_data,
         reviews_disponivel=disponivel["reviews"],
         disponivel=disponivel,
     )
