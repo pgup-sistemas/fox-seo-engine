@@ -247,9 +247,9 @@ TEMPLATE = """<!DOCTYPE html>
   <div class="card p-4">
     <h3 class="text-sm font-semibold mb-3" style="color:var(--muted);display:flex;align-items:center;gap:6px">
       <svg style="width:14px;height:14px;color:#e31b23;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
-      Share of Voice — Evolução
+      Alcance nas Buscas por Cidade
     </h3>
-    <div id="chart-sov"></div>
+    <div id="chart-sov-cidade">{% if not disponivel.serp %}{{ empty_state('Dados de SERP indisponíveis nesta execução.','Configure ao menos um provedor SERP (BRAVE_SEARCH_KEY, BING_SEARCH_KEY ou TAVILY_API_KEY) e reexecute o pipeline.') }}{% endif %}</div>
   </div>
 </div>
 
@@ -308,7 +308,7 @@ renderChart('chart-saude', CHARTS.saude);
 renderChart('chart-concorrentes', CHARTS.concorrentes);
 renderChart('chart-historico', CHARTS.historico);
 renderChart('chart-vitals', CHARTS.vitals);
-renderChart('chart-sov', CHARTS.sov);
+renderChart('chart-sov-cidade', CHARTS.sov_cidade);
 if (REVIEWS_DISPONIVEL) renderChart('chart-reviews', CHARTS.reviews);
 
 // DataTable
@@ -365,7 +365,7 @@ function applyTheme(theme) {
   const fontColor = isLight ? '#0f172a' : '#e2e8f0';
   const plotUpdate = { paper_bgcolor: paperBg, plot_bgcolor: bg, font: { color: fontColor } };
   ['chart-cobertura','chart-saude','chart-concorrentes','chart-historico',
-   'chart-vitals','chart-sov','chart-reviews'].forEach(id => {
+   'chart-vitals','chart-sov-cidade','chart-reviews'].forEach(id => {
     const el = document.getElementById(id);
     if (el && el._fullLayout) Plotly.relayout(id, plotUpdate);
   });
@@ -911,6 +911,33 @@ def _chart_sov(df_hist: pd.DataFrame | None, sov_atual: float) -> str | None:
     return fig.to_json()
 
 
+def _chart_sov_cidade(df_serp: pd.DataFrame | None) -> str | None:
+    if df_serp is None or "cidade" not in df_serp.columns or "posicao_fox" not in df_serp.columns:
+        return None
+    g = df_serp.groupby(["uf", "cidade"]).agg(
+        total=("query", "size"),
+        presente=("posicao_fox", lambda s: s.notna().sum()),
+    )
+    if g.empty:
+        return None
+    g["share"] = (g["presente"] / g["total"] * 100).round(1)
+    g = g.sort_values("share", ascending=False)
+    labels = [f"{cidade} ({uf})" for uf, cidade in g.index]
+    values = g["share"].tolist()
+    colors = ["#22c55e" if v >= 60 else ("#f59e0b" if v >= 30 else "#ef4444") for v in values]
+    text = [f"  {v}% — {int(p)}/{int(t)} buscas" for v, p, t in zip(values, g["presente"], g["total"])]
+    fig = go.Figure(go.Bar(
+        x=values, y=labels, orientation="h",
+        marker_color=colors, text=text, textposition="outside",
+        cliponaxis=False,
+    ))
+    fig.add_vline(x=60, line_dash="dash", line_color="#22c55e", annotation_text="Meta 60%")
+    fig.update_layout(height=360, margin=dict(t=20, b=20, l=130, r=90),
+                      xaxis=dict(range=[0, 100], title="% de buscas em que a Fox aparece no Top 10"),
+                      yaxis=dict(autorange="reversed"))
+    return fig.to_json()
+
+
 def _chart_reviews(df_reviews: pd.DataFrame | None) -> str | None:
     if df_reviews is None:
         return None
@@ -1026,6 +1053,7 @@ def run():
         "historico": _chart_historico(df_hist),
         "vitals": _chart_vitals(df_vitals),
         "sov": _chart_sov(df_hist, sov),
+        "sov_cidade": _chart_sov_cidade(df_serp),
         "reviews": _chart_reviews(df_reviews),
     }
 
