@@ -49,12 +49,31 @@ def _load_crawl() -> set[str]:
     return {normalize_url(u) for u in df["url"].dropna().tolist()}
 
 
+def _crawl_paths(existing_urls: set[str]) -> list[str]:
+    """Extrai só o caminho (sem o domínio) de cada URL rastreada, para casar slugs."""
+    paths = []
+    for u in existing_urls:
+        paths.append(u.split("/", 1)[1] if "/" in u else "")
+    return paths
+
+
+def _pagina_existe(servico_slug: str, cidade_slug: str, crawl_paths: list[str]) -> bool:
+    """Considera a combinação cidade×serviço coberta quando alguma página do site
+    contém, no caminho da URL, tanto o slug do serviço quanto o da cidade — em
+    qualquer ordem, separador ou estrutura de pastas. Reconhece padrões como
+    /servicos/pneus-geometria-3d-manaus, /manaus/pneus-geometria-3d,
+    /servicos/manaus/pneus-geometria-3d, etc."""
+    return any(servico_slug in p and cidade_slug in p for p in crawl_paths)
+
+
 def run():
     logger.info("Iniciando Gap Analyzer...")
     existing_urls = _load_crawl()
+    crawl_paths = _crawl_paths(existing_urls)
 
     records = []
     for unidade in UNIDADES:
+        cidade_slug = slugify(unidade["cidade"])
         for servico in SERVICOS:
             if not any(l in unidade["linhas"] for l in servico["linhas"]):
                 continue
@@ -62,7 +81,11 @@ def run():
             url_sugerida = normalize_url(
                 f"{DOMAIN}/servicos/{servico['slug']}-{unidade['slug_cidade']}"
             )
-            status = "existe" if url_sugerida in existing_urls else "ausente"
+            existe = (
+                url_sugerida in existing_urls
+                or _pagina_existe(servico["slug"], cidade_slug, crawl_paths)
+            )
+            status = "existe" if existe else "ausente"
             records.append({
                 "Cidade": unidade["cidade"],
                 "UF": unidade["uf"],
