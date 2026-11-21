@@ -154,6 +154,12 @@ TEMPLATE = """<!DOCTYPE html>
   <div class="card p-5 text-center">
     <div class="text-3xl font-bold text-blue-400">{{ kpis.cobertura_pct }}%</div>
     <div class="text-xs text-slate-400 mt-1">Cobertura Local</div>
+    <div style="margin-top:9px">
+      <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:{{ kpis.cobertura_pct }}%;background:#3b82f6;border-radius:3px;transition:width .5s"></div>
+      </div>
+      <div class="text-xs mt-1" style="color:var(--muted);opacity:.75">{{ kpis.cobertura_existe }} de {{ kpis.cobertura_total }} páginas</div>
+    </div>
   </div>
   <div class="card p-5 text-center">
     <div class="text-3xl font-bold text-green-400">{{ kpis.lps_recomendadas }}</div>
@@ -976,6 +982,8 @@ def run():
     kpis = {
         "paginas_mapeadas": paginas,
         "cobertura_pct": cobertura,
+        "cobertura_existe": existe_count,
+        "cobertura_total": total,
         "lps_recomendadas": lps,
         "sem_schema": sem_schema,
         "share_of_voice": sov,
