@@ -7,7 +7,23 @@ import pandas as pd
 import plotly.graph_objects as go
 from jinja2 import Template
 
+from config.matriz_negocio import UNIDADES, slugify
+
 logger = logging.getLogger(__name__)
+
+
+def _presenca_local(df_audit: pd.DataFrame | None) -> tuple[int, int]:
+    """Conta quantas cidades com unidade Fox já têm alguma página local no site
+    (/pneus/{cidade} ou /unidades/{cidade}). Retorna (com_presenca, total_cidades)."""
+    cidades = {slugify(u["cidade"]) for u in UNIDADES}
+    if df_audit is None or "url" not in df_audit.columns:
+        return 0, len(cidades)
+    urls = [str(u).lower() for u in df_audit["url"].dropna()]
+    com_presenca = {
+        c for c in cidades
+        if any(f"/pneus/{c}" in u or f"/unidades/{c}" in u for u in urls)
+    }
+    return len(com_presenca), len(cidades)
 
 TEMPLATE = """<!DOCTYPE html>
 {% macro empty_state(title, hint) %}
@@ -158,7 +174,12 @@ TEMPLATE = """<!DOCTYPE html>
       <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden">
         <div style="height:100%;width:{{ kpis.cobertura_pct }}%;background:#3b82f6;border-radius:3px;transition:width .5s"></div>
       </div>
-      <div class="text-xs mt-1" style="color:var(--muted);opacity:.75">{{ kpis.cobertura_existe }} de {{ kpis.cobertura_total }} páginas</div>
+      <div class="text-xs mt-2" style="display:flex;justify-content:space-between;color:var(--muted)">
+        <span>Presença local</span><span style="color:var(--text);font-weight:600">{{ kpis.presenca_cidades }}/{{ kpis.presenca_total }} cidades</span>
+      </div>
+      <div class="text-xs" style="display:flex;justify-content:space-between;color:var(--muted);opacity:.85;margin-top:2px">
+        <span>Páginas por serviço</span><span style="color:var(--text);font-weight:600">{{ kpis.cobertura_existe }}/{{ kpis.cobertura_total }}</span>
+      </div>
     </div>
   </div>
   <div class="card p-5 text-center">
@@ -979,11 +1000,15 @@ def run():
     score_medio = round(df_vitals["performance_score"].mean(), 1) if df_vitals is not None and "performance_score" in df_vitals.columns else 0
     media_rating = round(df_reviews["rating"].mean(), 2) if df_reviews is not None and "rating" in df_reviews.columns else 0
 
+    presenca_cidades, presenca_total = _presenca_local(df_audit)
+
     kpis = {
         "paginas_mapeadas": paginas,
         "cobertura_pct": cobertura,
         "cobertura_existe": existe_count,
         "cobertura_total": total,
+        "presenca_cidades": presenca_cidades,
+        "presenca_total": presenca_total,
         "lps_recomendadas": lps,
         "sem_schema": sem_schema,
         "share_of_voice": sov,
