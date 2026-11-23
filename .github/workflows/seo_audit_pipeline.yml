@@ -73,7 +73,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore: atualização automática do relatório SEO $(date +'%Y-%m-%d')"
-          git push
+          # Integra o que entrou no remoto desde o checkout, mantendo os arquivos recém-gerados
+          pushed=false
+          for i in 1 2 3; do
+            git fetch origin main
+            git merge -X ours --no-edit origin/main || true
+            if git push origin HEAD:main; then pushed=true; break; fi
+            echo "Push falhou (tentativa $i), tentando novamente..."
+            sleep 5
+          done
+          if [ "$pushed" != "true" ]; then
+            echo "::error::Não foi possível dar push após 3 tentativas."
+            exit 1
+          fi
 
       - name: Upload outputs as artifact (debug)
         if: always()
@@ -88,9 +100,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: 1,
-              body: `❌ **Fox SEO Engine falhou** em ${new Date().toISOString()}. [Ver logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`
-            });
+            const url = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            core.warning(`Fox SEO Engine falhou. Logs: ${url}`);
+            await core.summary
+              .addRaw(`### ❌ Fox SEO Engine falhou\n\n[Ver logs da execução](${url})`)
+              .write();

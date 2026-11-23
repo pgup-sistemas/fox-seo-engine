@@ -506,8 +506,7 @@ with open("output/share_of_voice.json", "w", encoding="utf-8") as f:
 
 - **Mecanismo 2 — Google Indexing API:** somente para URLs com `tem_schema = True` no CSV de auditoria (tipos `JobPosting` ou `BroadcastEvent`). Autenticar com `GOOGLE_CREDENTIALS_JSON` via arquivo temporário (mesma estratégia do `gsc_auditor.py`).
 
-- **Mecanismo 3 — Sitemap ping:** sempre ao final, independente do restante:
-  `GET https://www.google.com/ping?sitemap=https://redefox.com.br/sitemap.xml`
+- **Mecanismo 3 — Sitemap ping:** ~~`GET https://www.google.com/ping?sitemap=...`~~ **Removido (2026).** O Google aposentou o endpoint de ping de sitemap em 2023 (passou a retornar HTTP 404) e o Bing fez o mesmo. A forma atual de notificar sitemap é declará-lo no `robots.txt` e submetê-lo uma vez no Google Search Console / Bing Webmaster Tools. O `indexing_pusher` não faz mais ping.
 
 ---
 

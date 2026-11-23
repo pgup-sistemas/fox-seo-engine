@@ -34,13 +34,11 @@ def run():
     urls_file = Path("output/urls_para_indexar.txt")
     if not urls_file.exists() or urls_file.stat().st_size == 0:
         logger.info("output/urls_para_indexar.txt vazio ou ausente. Pulando indexação.")
-        _ping_sitemap()
         return
 
     urls = [u.strip() for u in urls_file.read_text(encoding="utf-8").splitlines() if u.strip()]
     if not urls:
         logger.info("Nenhuma URL para indexar.")
-        _ping_sitemap()
         return
 
     logger.info(f"Indexing Pusher: {len(urls)} URLs para processar.")
@@ -50,9 +48,6 @@ def run():
 
     # Mecanismo 2: Google Indexing API (somente schemas válidos)
     _send_google_indexing(urls)
-
-    # Mecanismo 3: Sitemap ping
-    _ping_sitemap()
 
 
 def _send_indexnow(urls: list[str]):
@@ -110,16 +105,3 @@ def _send_google_indexing(urls: list[str]):
             logger.info(f"Google Indexing API: {url}")
         except Exception as e:
             logger.warning(f"Google Indexing API falhou para {url}: {e}")
-
-
-def _ping_sitemap():
-    sitemap_url = "https://redefox.com.br/sitemap.xml"
-    try:
-        resp = requests.get(
-            "https://www.google.com/ping",
-            params={"sitemap": sitemap_url},
-            timeout=30,
-        )
-        logger.info(f"Sitemap ping → HTTP {resp.status_code}")
-    except Exception as e:
-        logger.warning(f"Sitemap ping falhou: {e}")
