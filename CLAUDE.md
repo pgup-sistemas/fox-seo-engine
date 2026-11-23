@@ -408,7 +408,7 @@ with open("output/share_of_voice.json", "w", encoding="utf-8") as f:
 
 - **Gerar `output/urls_para_indexar.txt` automaticamente** com todas as `URL_Sugerida` onde `Status_Atual != "existe"`. Este arquivo alimenta o `indexing_pusher.py`. Sem essa geração automática, o módulo de indexação nunca teria URLs para processar.
 
-- **Gerar FAQ Schema (`FAQPage`) para cada landing page sugerida.** O bloco FAQ faz a Fox aparecer duas vezes na mesma SERP (resultado orgânico + caixa "People Also Ask"). Adicionar ao JSON-LD de cada landing page:
+- **Gerar FAQ Schema (`FAQPage`) para cada landing page sugerida.** Nota (2026): o Google deixou de exibir o FAQ como rich result ("People Also Ask") para sites comuns, então o bloco não gera mais essa caixa na SERP. Ainda assim o `FAQPage` segue valioso e deve ser gerado: ajuda os buscadores de IA (ChatGPT, Gemini, Perplexity) e a busca por voz a entender e citar o conteúdo, além de reforçar a clareza semântica da página. Adicionar ao JSON-LD de cada landing page:
 
   ```json
   {
