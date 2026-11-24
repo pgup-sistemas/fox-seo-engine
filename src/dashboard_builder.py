@@ -39,6 +39,9 @@ TEMPLATE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inteligência SEO — Rede Fox</title>
 <link rel="icon" type="image/x-icon" href="redefox_favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
@@ -50,27 +53,63 @@ TEMPLATE = """<!DOCTYPE html>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root {
-    --bg: #111111; --card: #1a1a1a; --text: #e2e8f0; --muted: #9ca3af;
-    --border: #2d2d2d; --input-bg: #111111; --hover: #222222;
-    --alert-bg: #3f0000; --alert-border: #e31b23;
-    --fox-red: #e31b23; --fox-red-dark: #b51219;
+    --bg:#0b0e14; --card:#141922; --text:#e6eaf0; --muted:#8b94a3;
+    --border:#232a36; --input-bg:#10151e; --hover:#1a2130;
+    --alert-bg:#2a0d10; --alert-border:#e31b23; --alert-text:#fca5a5;
+    --fox-red:#e31b23; --fox-red-dark:#b51219; --accent-soft:rgba(227,27,35,.14);
+    --shadow:0 1px 2px rgba(0,0,0,.28);
   }
   :root[data-theme="light"] {
-    --bg: #f5f5f5; --card: #ffffff; --text: #111111; --muted: #555555;
-    --border: #e0e0e0; --input-bg: #ffffff; --hover: #f8f8f8;
-    --alert-bg: #fff0f0; --alert-border: #e31b23;
+    --bg:#f6f7f9; --card:#ffffff; --text:#0f172a; --muted:#64748b;
+    --border:#e6e8ec; --input-bg:#ffffff; --hover:#f3f4f6;
+    --alert-bg:#fef2f2; --alert-border:#e31b23; --alert-text:#b91c1c;
+    --accent-soft:rgba(227,27,35,.08);
+    --shadow:0 1px 2px rgba(16,24,40,.05);
   }
-  body { background:var(--bg); color:var(--text); font-family:sans-serif; transition:background .2s,color .2s; }
-  .card { background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.18); }
+  * { box-sizing:border-box; }
+  html { background:var(--bg); min-height:100vh; }
+  body { background:var(--bg); color:var(--text); max-width:1440px; margin:0 auto;
+         font-family:'Inter',system-ui,-apple-system,Segoe UI,sans-serif; -webkit-font-smoothing:antialiased;
+         transition:background .2s,color .2s; }
+  h1,h2,h3,h4 { letter-spacing:-.01em; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); }
   .accent { color:var(--fox-red); }
-  .alert-banner { background:var(--alert-bg); border:1px solid var(--alert-border); border-radius:8px; padding:12px 16px; margin-bottom:12px; }
-  .kpi-gauge { font-size:12px; padding:2px 8px; border-radius:9999px; font-weight:600; display:inline-block; }
-  .gauge-green { background:#166534; color:#86efac; }
-  .gauge-orange { background:#78350f; color:#fcd34d; }
-  .gauge-red { background:#7f1d1d; color:#fca5a5; }
-  :root[data-theme="light"] .gauge-green { background:#dcfce7; color:#166534; }
-  :root[data-theme="light"] .gauge-orange { background:#ffedd5; color:#9a3412; }
-  :root[data-theme="light"] .gauge-red { background:#fee2e2; color:#991b1b; }
+  .alert-banner { background:var(--alert-bg); border:1px solid var(--alert-border); border-radius:8px; padding:12px 16px; margin-bottom:12px; color:var(--alert-text); }
+  /* Topbar */
+  .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+            padding:18px 0 16px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .brand-mark { width:38px; height:38px; border-radius:9px; background:var(--fox-red); color:#fff;
+                display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px;
+                letter-spacing:-.03em; box-shadow:0 2px 8px rgba(227,27,35,.3); flex-shrink:0; }
+  .brand-title { font-size:17px; font-weight:700; line-height:1.15; color:var(--text); }
+  .brand-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .topbar-right { display:flex; align-items:center; gap:14px; }
+  .meta-updated { font-size:12px; color:var(--muted); text-align:right; line-height:1.45; }
+  .meta-updated b { color:var(--text); font-weight:600; }
+  /* KPI */
+  .kpi { display:flex; flex-direction:column; gap:7px; padding:18px; }
+  .kpi-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .kpi-value { font-size:30px; font-weight:700; line-height:1; color:var(--text); font-variant-numeric:tabular-nums; }
+  .kpi-foot { font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:8px; }
+  .kpi-foot .v { color:var(--text); font-weight:600; }
+  .badge { font-size:11px; padding:2px 9px; border-radius:9999px; font-weight:600; display:inline-flex; align-items:center; gap:5px; width:fit-content; }
+  .badge-green { background:rgba(34,197,94,.14); color:#15803d; }
+  .badge-orange{ background:rgba(245,158,11,.16); color:#b45309; }
+  .badge-red   { background:rgba(239,68,68,.14); color:#dc2626; }
+  :root:not([data-theme="light"]) .badge-green { color:#4ade80; }
+  :root:not([data-theme="light"]) .badge-orange{ color:#fbbf24; }
+  :root:not([data-theme="light"]) .badge-red  { color:#f87171; }
+  /* Card title */
+  .card-title { font-size:13px; font-weight:600; color:var(--text); display:flex; align-items:center; gap:8px; margin:0 0 14px; }
+  .card-title svg { flex-shrink:0; color:var(--muted); width:15px; height:15px; }
+  .kpi-gauge { font-size:11px; padding:2px 9px; border-radius:9999px; font-weight:600; display:inline-block; }
+  .gauge-green { background:rgba(34,197,94,.14); color:#15803d; }
+  .gauge-orange { background:rgba(245,158,11,.16); color:#b45309; }
+  .gauge-red { background:rgba(239,68,68,.14); color:#dc2626; }
+  :root:not([data-theme="light"]) .gauge-green { color:#4ade80; }
+  :root:not([data-theme="light"]) .gauge-orange { color:#fbbf24; }
+  :root:not([data-theme="light"]) .gauge-red { color:#f87171; }
   /* DataTables */
   table.dataTable thead th { background:var(--bg) !important; color:var(--muted) !important; border-bottom:1px solid var(--border) !important; }
   table.dataTable tbody tr { background:var(--card) !important; }
@@ -86,14 +125,14 @@ TEMPLATE = """<!DOCTYPE html>
   #theme-toggle { cursor:pointer; border:1px solid var(--border); border-radius:8px; padding:6px 12px; background:var(--card); color:var(--text); font-size:13px; display:flex; align-items:center; gap:6px; transition:background .2s; }
   #theme-toggle:hover { background:var(--hover); }
   /* Tabs */
-  .tab-bar { display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:28px; }
-  .tab-btn { padding:8px 20px; font-size:13px; font-weight:600; border:none; background:transparent; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .15s,border-color .15s; }
+  .tab-bar { display:flex; gap:2px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+  .tab-btn { padding:11px 16px; font-size:13px; font-weight:600; border:none; background:transparent; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .15s,border-color .15s; }
   .tab-btn:hover { color:var(--text); }
-  .tab-btn.active { color:var(--fox-red); border-bottom-color:var(--fox-red); }
+  .tab-btn.active { color:var(--text); border-bottom-color:var(--fox-red); }
   /* Guide cards */
   .guide-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
   @media(max-width:768px){ .guide-grid { grid-template-columns:1fr; } }
-  .guide-card { background:var(--card); border-radius:12px; padding:20px; }
+  .guide-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px; box-shadow:var(--shadow); }
   .guide-card h4 { font-size:14px; font-weight:700; margin:0 0 4px; color:var(--text); }
   .guide-card .desc { font-size:12px; color:var(--muted); margin:0 0 14px; line-height:1.6; }
   .semaforo { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:14px; }
@@ -122,11 +161,16 @@ TEMPLATE = """<!DOCTYPE html>
 </head>
 <body class="p-6">
 
-<div class="mb-8 flex items-start justify-between flex-wrap gap-3">
-  <div>
-    <h1 class="text-2xl font-bold accent mb-1">Inteligência de Busca &amp; Expansão Web — Rede Fox</h1>
-    <p class="text-sm" style="color:var(--muted)">Gerado em {{ gerado_em }} &nbsp;·&nbsp; Atualizado toda segunda-feira às 4h BRT</p>
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">F</div>
+    <div>
+      <div class="brand-title">Rede Fox — Inteligência de Busca</div>
+      <div class="brand-sub">Expansão Web &amp; SEO Local</div>
+    </div>
   </div>
+  <div class="topbar-right">
+    <div class="meta-updated">Gerado em <b>{{ gerado_em }}</b><br>Atualizado toda segunda-feira às 4h BRT</div>
   <button id="theme-toggle" onclick="toggleTheme()">
     <span id="theme-icon">
       <svg id="icon-moon" style="width:14px;height:14px;display:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
@@ -134,6 +178,7 @@ TEMPLATE = """<!DOCTYPE html>
     </span>
     <span id="theme-label">Tema Claro</span>
   </button>
+  </div>
 </div>
 
 <!-- Tab bar -->
@@ -163,36 +208,32 @@ TEMPLATE = """<!DOCTYPE html>
 
 <!-- KPIs -->
 <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-  <div class="card p-5 text-center">
-    <div class="text-3xl font-bold accent">{{ kpis.paginas_mapeadas }}</div>
-    <div class="text-xs text-slate-400 mt-1">Páginas Mapeadas</div>
+  <div class="card kpi">
+    <div class="kpi-label">Páginas Mapeadas</div>
+    <div class="kpi-value">{{ kpis.paginas_mapeadas }}</div>
   </div>
-  <div class="card p-5 text-center">
-    <div class="text-3xl font-bold text-blue-400">{{ kpis.cobertura_pct }}%</div>
-    <div class="text-xs text-slate-400 mt-1">Cobertura Local</div>
-    <div style="margin-top:9px">
-      <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden">
-        <div style="height:100%;width:{{ kpis.cobertura_pct }}%;background:#3b82f6;border-radius:3px;transition:width .5s"></div>
-      </div>
-      <div class="text-xs mt-2" style="display:flex;justify-content:space-between;color:var(--muted)">
-        <span>Presença local</span><span style="color:var(--text);font-weight:600">{{ kpis.presenca_cidades }}/{{ kpis.presenca_total }} cidades</span>
-      </div>
-      <div class="text-xs" style="display:flex;justify-content:space-between;color:var(--muted);opacity:.85;margin-top:2px">
-        <span>Páginas por serviço</span><span style="color:var(--text);font-weight:600">{{ kpis.cobertura_existe }}/{{ kpis.cobertura_total }}</span>
-      </div>
+  <div class="card kpi">
+    <div class="kpi-label">Cobertura Local</div>
+    <div class="kpi-value">{{ kpis.cobertura_pct }}%</div>
+    <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:2px">
+      <div style="height:100%;width:{{ kpis.cobertura_pct }}%;background:var(--fox-red);border-radius:3px;transition:width .5s"></div>
     </div>
+    <div class="kpi-foot"><span>Presença local</span><span class="v">{{ kpis.presenca_cidades }}/{{ kpis.presenca_total }} cidades</span></div>
+    <div class="kpi-foot" style="margin-top:-3px"><span>Páginas por serviço</span><span class="v">{{ kpis.cobertura_existe }}/{{ kpis.cobertura_total }}</span></div>
   </div>
-  <div class="card p-5 text-center">
-    <div class="text-3xl font-bold text-green-400">{{ kpis.lps_recomendadas }}</div>
-    <div class="text-xs text-slate-400 mt-1">Landing Pages a Criar</div>
+  <div class="card kpi">
+    <div class="kpi-label">Landing Pages a Criar</div>
+    <div class="kpi-value">{{ kpis.lps_recomendadas }}</div>
+    <span class="badge badge-orange">Oportunidade</span>
   </div>
-  <div class="card p-5 text-center">
-    <div class="text-3xl font-bold text-yellow-400">{{ kpis.sem_schema }}</div>
-    <div class="text-xs text-slate-400 mt-1">Páginas sem Schema</div>
+  <div class="card kpi">
+    <div class="kpi-label">Páginas sem Schema</div>
+    <div class="kpi-value">{{ kpis.sem_schema }}</div>
+    <span class="badge badge-red">Ação técnica</span>
   </div>
-  <div class="card p-5 text-center">
-    <div class="text-3xl font-bold {{ 'text-green-400' if kpis.share_of_voice >= 60 else ('text-yellow-400' if kpis.share_of_voice >= 30 else 'text-red-400') }}">{{ kpis.share_of_voice }}%</div>
-    <div class="text-xs text-slate-400 mt-1">Share of Voice</div>
+  <div class="card kpi">
+    <div class="kpi-label">Share of Voice</div>
+    <div class="kpi-value">{{ kpis.share_of_voice }}%</div>
     <span class="kpi-gauge {{ 'gauge-green' if kpis.share_of_voice >= 60 else ('gauge-orange' if kpis.share_of_voice >= 30 else 'gauge-red') }}">
       {{ 'Líder' if kpis.share_of_voice >= 60 else ('Crescendo' if kpis.share_of_voice >= 30 else 'Crítico') }}
     </span>
