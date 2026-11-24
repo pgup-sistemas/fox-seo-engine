@@ -122,7 +122,7 @@ TEMPLATE = """<!DOCTYPE html>
   .dataTables_wrapper .dataTables_paginate .paginate_button.current { background:var(--fox-red) !important; color:#fff !important; border-radius:4px; }
   .dt-buttons .dt-button { background:var(--card) !important; color:var(--text) !important; border:1px solid var(--border) !important; border-radius:4px; padding:4px 12px; margin-right:4px; }
   /* Toggle button */
-  #theme-toggle { cursor:pointer; border:1px solid var(--border); border-radius:8px; padding:6px 12px; background:var(--card); color:var(--text); font-size:13px; display:flex; align-items:center; gap:6px; transition:background .2s; }
+  #theme-toggle { cursor:pointer; border:1px solid var(--border); border-radius:8px; width:38px; height:38px; padding:0; background:var(--card); color:var(--text); display:inline-flex; align-items:center; justify-content:center; transition:background .2s,border-color .2s; }
   #theme-toggle:hover { background:var(--hover); }
   /* Tabs */
   .tab-bar { display:flex; gap:2px; border-bottom:1px solid var(--border); margin-bottom:24px; }
@@ -171,12 +171,11 @@ TEMPLATE = """<!DOCTYPE html>
   </div>
   <div class="topbar-right">
     <div class="meta-updated">Gerado em <b>{{ gerado_em }}</b><br>Atualizado toda segunda-feira às 4h BRT</div>
-  <button id="theme-toggle" onclick="toggleTheme()">
+  <button id="theme-toggle" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar tema claro/escuro">
     <span id="theme-icon">
-      <svg id="icon-moon" style="width:14px;height:14px;display:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
-      <svg id="icon-sun" style="width:14px;height:14px;display:none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+      <svg id="icon-moon" style="width:16px;height:16px;display:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+      <svg id="icon-sun" style="width:16px;height:16px;display:none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
     </span>
-    <span id="theme-label">Tema Claro</span>
   </button>
   </div>
 </div>
@@ -408,12 +407,11 @@ function applyTheme(theme) {
   const isLight = theme === 'light';
   document.getElementById('icon-moon').style.display = isLight ? 'block' : 'none';
   document.getElementById('icon-sun').style.display  = isLight ? 'none'  : 'block';
-  document.getElementById('theme-label').textContent = isLight ? 'Tema Escuro' : 'Tema Claro';
 
   // Re-render Plotly charts com cores do tema atual
-  const bg = isLight ? '#ffffff' : '#1a1a1a';
-  const paperBg = isLight ? '#ffffff' : '#1a1a1a';
-  const fontColor = isLight ? '#0f172a' : '#e2e8f0';
+  const bg = isLight ? '#ffffff' : '#141922';
+  const paperBg = isLight ? '#ffffff' : '#141922';
+  const fontColor = isLight ? '#0f172a' : '#e6eaf0';
   const plotUpdate = { paper_bgcolor: paperBg, plot_bgcolor: bg, font: { color: fontColor } };
   ['chart-cobertura','chart-saude','chart-concorrentes','chart-historico',
    'chart-vitals','chart-sov-cidade','chart-sov','chart-reviews'].forEach(id => {
