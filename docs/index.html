@@ -137,7 +137,7 @@
     </div>
   </div>
   <div class="topbar-right">
-    <div class="meta-updated">Gerado em <b>24/11/2026 08:34</b><br>Atualizado toda segunda-feira às 4h BRT</div>
+    <div class="meta-updated">Gerado em <b>24/11/2026 16:25</b><br>Atualizado toda segunda-feira às 4h BRT</div>
   <button id="theme-toggle" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar tema claro/escuro">
     <span id="theme-icon">
       <svg id="icon-moon" style="width:16px;height:16px;display:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
@@ -407,7 +407,7 @@ function toggleTheme() {
 <div id="tab-dev" style="display:none">
 
 <div style="background:var(--card);border-left:3px solid var(--fox-red);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:28px">
-  <p style="font-size:13px;margin:0;line-height:1.6"><strong style="color:var(--fox-red)">Central de Implementação</strong> — Schemas e landing pages gerados automaticamente em <strong>24/11/2026 08:34</strong>. Atualizado toda segunda-feira. Copie o código e cole diretamente no site.</p>
+  <p style="font-size:13px;margin:0;line-height:1.6"><strong style="color:var(--fox-red)">Central de Implementação</strong> — Schemas e landing pages gerados automaticamente em <strong>24/11/2026 16:25</strong>. Atualizado toda segunda-feira. Copie o código e cole diretamente no site.</p>
 </div>
 
 <!-- Seção 1: AutoRepair -->
@@ -454,8 +454,157 @@ function toggleTheme() {
   </div>
 </div>
 
-<!-- Seção 3: Checklist LPs -->
-<p class="section-title">3. Landing Pages a Criar — <span id="lp-count-dev" style="color:var(--fox-red)">0</span> pendentes</p>
+<!-- Seção 3: Article / BlogPosting -->
+<p class="section-title">3. Schema Article — Páginas de Blog (<code style="font-size:11px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px">/blog/</code>)</p>
+<div class="card p-6 mb-6">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Indica ao Google que a página é um artigo editorial. Melhora rastreamento, breadcrumbs na SERP e elegibilidade para <strong style="color:var(--text)">Top Stories</strong>. Inserir em cada post do blog — substituir os campos marcados com <code style="color:#f97316">← SUBSTITUIR</code>.</p>
+  <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+    <button onclick="copyCode('code-article','btn-copy-article')" id="btn-copy-article" class="copy-btn">
+      <svg style="width:13px;height:13px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
+      Copiar código
+    </button>
+    <span style="font-size:12px;color:var(--muted)">Validar em: <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">search.google.com/test/rich-results</a></span>
+  </div>
+  <pre id="code-article" class="code-block">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "← SUBSTITUIR: Título do artigo (máx. 110 chars)",
+  "description": "← SUBSTITUIR: Resumo do artigo (meta description, máx. 155 chars)",
+  "url": "← SUBSTITUIR: https://redefox.com.br/blog/slug-do-artigo",
+  "datePublished": "← SUBSTITUIR: 2024-01-15",
+  "dateModified": "← SUBSTITUIR: 2024-06-10",
+  "image": {
+    "@type": "ImageObject",
+    "url": "← SUBSTITUIR: https://redefox.com.br/images/nome-imagem.jpg",
+    "width": 1200,
+    "height": 630
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Rede Fox",
+    "url": "https://redefox.com.br"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Rede Fox",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://redefox.com.br/images/logo-fox.png",
+      "width": 300,
+      "height": 60
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "← SUBSTITUIR: https://redefox.com.br/blog/slug-do-artigo"
+  }
+}
+&lt;/script&gt;</pre>
+  <div class="guide-action" style="margin-top:12px">
+    <strong>Onde inserir no site</strong>
+    Dentro do <code>&lt;head&gt;</code> de cada página <code>/blog/*</code>. No WordPress use o plugin <strong>Yoast SEO</strong> ou <strong>RankMath</strong> (preenchem automaticamente). Em CMS custom, insira o bloco no template da categoria Blog.
+  </div>
+</div>
+
+<!-- Seção 4: Product -->
+<p class="section-title">4. Schema Product — Pneus e Peças (<code style="font-size:11px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px">/pneus/medida/</code> e <code style="font-size:11px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px">/pecas/</code>)</p>
+<div class="card p-6 mb-6">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Habilita <strong style="color:var(--text)">rich snippets de produto</strong> na SERP (preço, disponibilidade, avaliação). Especialmente impactante para buscas de pneu por medida (<em>"pneu 205/55 R16"</em>) onde o usuário já sabe o que quer e compara preços diretamente na SERP.</p>
+  <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+    <button onclick="copyCode('code-product','btn-copy-product')" id="btn-copy-product" class="copy-btn">
+      <svg style="width:13px;height:13px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
+      Copiar código
+    </button>
+    <span style="font-size:12px;color:var(--muted)">Validar em: <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">search.google.com/test/rich-results</a></span>
+  </div>
+  <pre id="code-product" class="code-block">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "← SUBSTITUIR: Pneu 205/55 R16 Bridgestone Turanza",
+  "description": "← SUBSTITUIR: Pneu 205/55 R16 com excelente aderência. Disponível na Rede Fox com montagem inclusa.",
+  "url": "← SUBSTITUIR: https://redefox.com.br/pneus/205-55-r16",
+  "image": "← SUBSTITUIR: https://redefox.com.br/images/pneu-205-55-r16.jpg",
+  "brand": {
+    "@type": "Brand",
+    "name": "← SUBSTITUIR: Bridgestone"
+  },
+  "sku": "← SUBSTITUIR: 20555R16-BT",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "BRL",
+    "price": "← SUBSTITUIR: 450.00",
+    "priceValidUntil": "← SUBSTITUIR: 2025-12-31",
+    "availability": "https://schema.org/InStock",
+    "url": "← SUBSTITUIR: https://redefox.com.br/pneus/205-55-r16",
+    "seller": {
+      "@type": "Organization",
+      "name": "Rede Fox"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "← SUBSTITUIR: 24"
+  }
+}
+&lt;/script&gt;</pre>
+  <div class="guide-action" style="margin-top:12px">
+    <strong>Campos obrigatórios pelo Google</strong>
+    <code>name</code>, <code>offers.price</code> e <code>offers.priceCurrency</code> são exigidos para o rich snippet aparecer. <code>aggregateRating</code> é opcional mas aumenta significativamente o CTR — use se tiver avaliações de produto.
+  </div>
+</div>
+
+<!-- Seção 5: Service -->
+<p class="section-title">5. Schema Service — Páginas de Serviço (<code style="font-size:11px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px">/servicos/</code>)</p>
+<div class="card p-6 mb-6">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Descreve o serviço oferecido, a área de cobertura e o prestador. Reforça relevância para buscas genéricas de serviço sem cidade (<em>"geometria 3D"</em>, <em>"alinhamento balanceamento"</em>). Inserir em cada página <code>/servicos/*</code>.</p>
+  <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+    <button onclick="copyCode('code-service','btn-copy-service')" id="btn-copy-service" class="copy-btn">
+      <svg style="width:13px;height:13px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
+      Copiar código
+    </button>
+    <span style="font-size:12px;color:var(--muted)">Validar em: <a href="https://validator.schema.org" target="_blank" style="color:#60a5fa">validator.schema.org</a></span>
+  </div>
+  <pre id="code-service" class="code-block">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "← SUBSTITUIR: Alinhamento e Balanceamento",
+  "serviceType": "← SUBSTITUIR: Alinhamento e Balanceamento de Pneus",
+  "description": "← SUBSTITUIR: Serviço de alinhamento e balanceamento para carros e SUVs. Equipamentos de última geração com geometria 3D. Atendemos todas as marcas.",
+  "url": "← SUBSTITUIR: https://redefox.com.br/servicos/alinhamento-balanceamento",
+  "provider": {
+    "@type": "Organization",
+    "name": "Rede Fox",
+    "url": "https://redefox.com.br",
+    "telephone": "← SUBSTITUIR: (69) 3217-3040"
+  },
+  "areaServed": [
+    { "@type": "State", "name": "Rondônia" },
+    { "@type": "State", "name": "Amazonas" },
+    { "@type": "State", "name": "Acre" }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Alinhamento e Balanceamento",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Alinhamento Dianteiro" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Balanceamento de Pneus" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Geometria 3D" } }
+    ]
+  }
+}
+&lt;/script&gt;</pre>
+  <div class="guide-action" style="margin-top:12px">
+    <strong>Onde inserir no site</strong>
+    Dentro do <code>&lt;head&gt;</code> de cada página <code>/servicos/*</code>. Ajuste <code>areaServed</code> conforme as cidades atendidas pelo serviço e <code>hasOfferCatalog</code> com os sub-serviços da categoria.
+  </div>
+</div>
+
+<!-- Seção 6: Checklist LPs -->
+<p class="section-title">6. Landing Pages a Criar — <span id="lp-count-dev" style="color:var(--fox-red)">0</span> pendentes</p>
 <div class="card p-6 mb-6">
   <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Cada página criada aumenta o Share of Voice em ~0,5–1 ponto. Title SEO e Meta Description já estão prontos para colar no CMS.</p>
   <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
@@ -480,14 +629,15 @@ function toggleTheme() {
   <p id="lp-empty" style="font-size:12px;color:var(--muted);text-align:center;padding:24px;display:none">Nenhuma LP pendente — todas as páginas já existem! 🎉</p>
 </div>
 
-<!-- Seção 4: Passo a passo -->
-<p class="section-title">4. Como implementar — Passo a passo</p>
+<!-- Seção 7: Passo a passo -->
+<p class="section-title">7. Como implementar — Passo a passo</p>
 <div class="card p-6 mb-6">
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px">
-    <div style="display:flex;gap:14px"><div class="step-num">1</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Criar a página no CMS</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Use a URL sugerida na tabela acima. Cole o Title SEO e a Meta Description já prontos. Publique o conteúdo.</p></div></div>
-    <div style="display:flex;gap:14px"><div class="step-num">2</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Inserir Schema AutoRepair</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Copie o código da Seção 1, cole no <code>&lt;head&gt;</code> da página como <code>&lt;script type="application/ld+json"&gt;</code>.</p></div></div>
-    <div style="display:flex;gap:14px"><div class="step-num">3</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Inserir Schema FAQPage</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Copie o código da Seção 2, cole como <strong>segundo bloco separado</strong> <code>&lt;script type="application/ld+json"&gt;</code> logo após o anterior.</p></div></div>
-    <div style="display:flex;gap:14px"><div class="step-num">4</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Validar no Google</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Acesse <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">search.google.com/test/rich-results</a>, cole a URL e confirme que o <strong>AutoRepair</strong> foi reconhecido. O FAQPage não aparece mais como rich result (normal desde 2026); para checar a sintaxe dele use o <a href="https://validator.schema.org" target="_blank" style="color:#60a5fa">validator.schema.org</a>.</p></div></div>
+    <div style="display:flex;gap:14px"><div class="step-num">1</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Criar as LPs no CMS</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Use a URL sugerida na tabela da Seção 6. Cole o Title SEO e a Meta Description já prontos. Publique o conteúdo.</p></div></div>
+    <div style="display:flex;gap:14px"><div class="step-num">2</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Schema por tipo de página</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6"><strong>Unidades:</strong> Seção 1 (AutoRepair) + Seção 2 (FAQPage) no <code>&lt;head&gt;</code>. <strong>Blog:</strong> Seção 3 (Article). <strong>Pneus/Peças:</strong> Seção 4 (Product). <strong>Serviços:</strong> Seção 5 (Service).</p></div></div>
+    <div style="display:flex;gap:14px"><div class="step-num">3</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Inserir como JSON-LD</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">Cole cada schema como bloco separado: <code>&lt;script type="application/ld+json"&gt;...&lt;/script&gt;</code> dentro do <code>&lt;head&gt;</code>. Uma mesma página pode ter múltiplos blocos (ex.: AutoRepair + FAQPage).</p></div></div>
+    <div style="display:flex;gap:14px"><div class="step-num">4</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Validar no Google</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6"><a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">search.google.com/test/rich-results</a> para AutoRepair e Product. <a href="https://validator.schema.org" target="_blank" style="color:#60a5fa">validator.schema.org</a> para todos os tipos. FAQPage não gera rich result (normal desde 2026) mas valida sintaticamente.</p></div></div>
+    <div style="display:flex;gap:14px"><div class="step-num">5</div><div><h4 style="font-size:13px;font-weight:700;margin:0 0 5px">Pedir reindexação</h4><p style="font-size:12px;color:var(--muted);margin:0;line-height:1.6">No Google Search Console, use <strong>Inspecionar URL</strong> → <strong>Solicitar indexação</strong> para as páginas novas ou editadas. O IndexNow (Bing) é feito automaticamente pelo pipeline a cada execução.</p></div></div>
   </div>
 </div>
 
