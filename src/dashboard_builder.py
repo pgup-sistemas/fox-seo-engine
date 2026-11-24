@@ -492,149 +492,63 @@ function toggleTheme() {
 <!-- Seção 3: Article / BlogPosting -->
 <p class="section-title">3. Schema Article — Páginas de Blog (<code style="font-size:11px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px">/blog/</code>)</p>
 <div class="card p-6 mb-6">
-  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Indica ao Google que a página é um artigo editorial. Melhora rastreamento, breadcrumbs na SERP e elegibilidade para <strong style="color:var(--text)">Top Stories</strong>. Inserir em cada post do blog — substituir os campos marcados com <code style="color:#f97316">← SUBSTITUIR</code>.</p>
-  <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Indica ao Google que a página é um artigo editorial. Melhora rastreamento, breadcrumbs na SERP e elegibilidade para <strong style="color:var(--text)">Top Stories</strong>. Selecione o post abaixo — título e descrição são preenchidos automaticamente do site.</p>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+    <select id="sel-article" onchange="showArticle(this.value)" class="dev-select">
+      <option value="">— Selecione o post do blog —</option>
+    </select>
     <button onclick="copyCode('code-article','btn-copy-article')" id="btn-copy-article" class="copy-btn">
       <svg style="width:13px;height:13px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
       Copiar código
     </button>
-    <span style="font-size:12px;color:var(--muted)">Validar em: <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">search.google.com/test/rich-results</a></span>
+    <span style="font-size:12px;color:var(--muted)">Validar: <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">rich-results</a></span>
   </div>
-  <pre id="code-article" class="code-block">&lt;script type="application/ld+json"&gt;
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "← SUBSTITUIR: Título do artigo (máx. 110 chars)",
-  "description": "← SUBSTITUIR: Resumo do artigo (meta description, máx. 155 chars)",
-  "url": "← SUBSTITUIR: https://redefox.com.br/blog/slug-do-artigo",
-  "datePublished": "← SUBSTITUIR: 2024-01-15",
-  "dateModified": "← SUBSTITUIR: 2024-06-10",
-  "image": {
-    "@type": "ImageObject",
-    "url": "← SUBSTITUIR: https://redefox.com.br/images/nome-imagem.jpg",
-    "width": 1200,
-    "height": 630
-  },
-  "author": {
-    "@type": "Organization",
-    "name": "Rede Fox",
-    "url": "https://redefox.com.br"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Rede Fox",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://redefox.com.br/images/logo-fox.png",
-      "width": 300,
-      "height": 60
-    }
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "← SUBSTITUIR: https://redefox.com.br/blog/slug-do-artigo"
-  }
-}
-&lt;/script&gt;</pre>
-  <div class="guide-action" style="margin-top:12px">
-    <strong>Onde inserir no site</strong>
-    Dentro do <code>&lt;head&gt;</code> de cada página <code>/blog/*</code>. No WordPress use o plugin <strong>Yoast SEO</strong> ou <strong>RankMath</strong> (preenchem automaticamente). Em CMS custom, insira o bloco no template da categoria Blog.
+  <pre id="code-article" class="code-block">← Selecione um post acima para ver o código</pre>
+  <div id="url-hint-article" class="guide-action" style="margin-top:12px;display:none">
+    <strong>Onde inserir</strong>
+    No <code>&lt;head&gt;</code> de <span id="url-article-text" style="color:#60a5fa"></span>. Campos marcados com <code style="color:#f97316">← SUBSTITUIR</code> precisam de ajuste manual (data de publicação, imagem destaque).
   </div>
 </div>
 
 <!-- Seção 4: Product -->
 <p class="section-title">4. Schema Product — Pneus e Peças (<code style="font-size:11px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px">/pneus/medida/</code> e <code style="font-size:11px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px">/pecas/</code>)</p>
 <div class="card p-6 mb-6">
-  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Habilita <strong style="color:var(--text)">rich snippets de produto</strong> na SERP (preço, disponibilidade, avaliação). Especialmente impactante para buscas de pneu por medida (<em>"pneu 205/55 R16"</em>) onde o usuário já sabe o que quer e compara preços diretamente na SERP.</p>
-  <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Habilita <strong style="color:var(--text)">rich snippets de produto</strong> na SERP (preço, disponibilidade, avaliação). Especialmente impactante para buscas de pneu por medida. Título e descrição preenchidos automaticamente do site — só ajuste preço e imagem.</p>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+    <select id="sel-product" onchange="showProduct(this.value)" class="dev-select">
+      <option value="">— Selecione o produto —</option>
+    </select>
     <button onclick="copyCode('code-product','btn-copy-product')" id="btn-copy-product" class="copy-btn">
       <svg style="width:13px;height:13px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
       Copiar código
     </button>
-    <span style="font-size:12px;color:var(--muted)">Validar em: <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">search.google.com/test/rich-results</a></span>
+    <span style="font-size:12px;color:var(--muted)">Validar: <a href="https://search.google.com/test/rich-results" target="_blank" style="color:#60a5fa">rich-results</a></span>
   </div>
-  <pre id="code-product" class="code-block">&lt;script type="application/ld+json"&gt;
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "← SUBSTITUIR: Pneu 205/55 R16 Bridgestone Turanza",
-  "description": "← SUBSTITUIR: Pneu 205/55 R16 com excelente aderência. Disponível na Rede Fox com montagem inclusa.",
-  "url": "← SUBSTITUIR: https://redefox.com.br/pneus/205-55-r16",
-  "image": "← SUBSTITUIR: https://redefox.com.br/images/pneu-205-55-r16.jpg",
-  "brand": {
-    "@type": "Brand",
-    "name": "← SUBSTITUIR: Bridgestone"
-  },
-  "sku": "← SUBSTITUIR: 20555R16-BT",
-  "offers": {
-    "@type": "Offer",
-    "priceCurrency": "BRL",
-    "price": "← SUBSTITUIR: 450.00",
-    "priceValidUntil": "← SUBSTITUIR: 2025-12-31",
-    "availability": "https://schema.org/InStock",
-    "url": "← SUBSTITUIR: https://redefox.com.br/pneus/205-55-r16",
-    "seller": {
-      "@type": "Organization",
-      "name": "Rede Fox"
-    }
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "reviewCount": "← SUBSTITUIR: 24"
-  }
-}
-&lt;/script&gt;</pre>
-  <div class="guide-action" style="margin-top:12px">
+  <pre id="code-product" class="code-block">← Selecione um produto acima para ver o código</pre>
+  <div id="url-hint-product" class="guide-action" style="margin-top:12px;display:none">
     <strong>Campos obrigatórios pelo Google</strong>
-    <code>name</code>, <code>offers.price</code> e <code>offers.priceCurrency</code> são exigidos para o rich snippet aparecer. <code>aggregateRating</code> é opcional mas aumenta significativamente o CTR — use se tiver avaliações de produto.
+    <code>name</code>, <code>offers.price</code> e <code>offers.priceCurrency</code> são exigidos. Inserir no <code>&lt;head&gt;</code> de <span id="url-product-text" style="color:#60a5fa"></span>.
   </div>
 </div>
 
 <!-- Seção 5: Service -->
 <p class="section-title">5. Schema Service — Páginas de Serviço (<code style="font-size:11px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px">/servicos/</code>)</p>
 <div class="card p-6 mb-6">
-  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Descreve o serviço oferecido, a área de cobertura e o prestador. Reforça relevância para buscas genéricas de serviço sem cidade (<em>"geometria 3D"</em>, <em>"alinhamento balanceamento"</em>). Inserir em cada página <code>/servicos/*</code>.</p>
-  <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+  <p style="font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.6">Descreve o serviço oferecido, área de cobertura e prestador. Reforça relevância para buscas genéricas sem cidade (<em>"geometria 3D"</em>, <em>"alinhamento balanceamento"</em>). Nome e descrição preenchidos do site automaticamente.</p>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+    <select id="sel-service" onchange="showService(this.value)" class="dev-select">
+      <option value="">— Selecione o serviço —</option>
+    </select>
     <button onclick="copyCode('code-service','btn-copy-service')" id="btn-copy-service" class="copy-btn">
       <svg style="width:13px;height:13px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
       Copiar código
     </button>
-    <span style="font-size:12px;color:var(--muted)">Validar em: <a href="https://validator.schema.org" target="_blank" style="color:#60a5fa">validator.schema.org</a></span>
+    <span style="font-size:12px;color:var(--muted)">Validar: <a href="https://validator.schema.org" target="_blank" style="color:#60a5fa">validator.schema.org</a></span>
   </div>
-  <pre id="code-service" class="code-block">&lt;script type="application/ld+json"&gt;
-{
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "name": "← SUBSTITUIR: Alinhamento e Balanceamento",
-  "serviceType": "← SUBSTITUIR: Alinhamento e Balanceamento de Pneus",
-  "description": "← SUBSTITUIR: Serviço de alinhamento e balanceamento para carros e SUVs. Equipamentos de última geração com geometria 3D. Atendemos todas as marcas.",
-  "url": "← SUBSTITUIR: https://redefox.com.br/servicos/alinhamento-balanceamento",
-  "provider": {
-    "@type": "Organization",
-    "name": "Rede Fox",
-    "url": "https://redefox.com.br",
-    "telephone": "← SUBSTITUIR: (69) 3217-3040"
-  },
-  "areaServed": [
-    { "@type": "State", "name": "Rondônia" },
-    { "@type": "State", "name": "Amazonas" },
-    { "@type": "State", "name": "Acre" }
-  ],
-  "hasOfferCatalog": {
-    "@type": "OfferCatalog",
-    "name": "Alinhamento e Balanceamento",
-    "itemListElement": [
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Alinhamento Dianteiro" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Balanceamento de Pneus" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Geometria 3D" } }
-    ]
-  }
-}
-&lt;/script&gt;</pre>
-  <div class="guide-action" style="margin-top:12px">
-    <strong>Onde inserir no site</strong>
-    Dentro do <code>&lt;head&gt;</code> de cada página <code>/servicos/*</code>. Ajuste <code>areaServed</code> conforme as cidades atendidas pelo serviço e <code>hasOfferCatalog</code> com os sub-serviços da categoria.
+  <pre id="code-service" class="code-block">← Selecione um serviço acima para ver o código</pre>
+  <div id="url-hint-service" class="guide-action" style="margin-top:12px;display:none">
+    <strong>Onde inserir</strong>
+    No <code>&lt;head&gt;</code> de <span id="url-service-text" style="color:#60a5fa"></span>. Ajuste <code>hasOfferCatalog</code> com os sub-serviços desta categoria.
   </div>
 </div>
 
@@ -677,8 +591,11 @@ function toggleTheme() {
 </div>
 
 <script>
-window.schemasData = {{ schemas_data | tojson }};
-window.faqData     = {{ faq_data | tojson }};
+window.schemasData  = {{ schemas_data | tojson }};
+window.faqData      = {{ faq_data | tojson }};
+window.articleData  = {{ article_data | tojson }};
+window.productData  = {{ product_data | tojson }};
+window.serviceData  = {{ service_data | tojson }};
 
 // ── AutoRepair ───────────────────────────────────────────────────
 (function() {
@@ -744,6 +661,50 @@ function showFaq() {
   pre.textContent = '<script type="application/ld+json">\\n' + JSON.stringify(f, null, 2) + '\\n<\\/script>';
   hint.style.display = '';
   document.getElementById('url-faq-text').textContent = f.url || '';
+}
+
+// ── Article / Product / Service (selects dinâmicos) ─────────────
+(function() {
+  function populateSel(selId, data, labelKey) {
+    var sel = document.getElementById(selId);
+    if (!sel) return;
+    (data || []).forEach(function(d, i) {
+      var o = document.createElement('option');
+      o.value = i;
+      o.textContent = d[labelKey] || d._label || d.url || i;
+      sel.appendChild(o);
+    });
+  }
+  populateSel('sel-article', window.articleData, '_label');
+  populateSel('sel-product', window.productData, '_label');
+  populateSel('sel-service', window.serviceData, '_label');
+})();
+
+function _showDynamicSchema(idx, data, preId, hintId, urlSpanId) {
+  var pre = document.getElementById(preId);
+  var hint = document.getElementById(hintId);
+  if (idx === '' || idx === undefined) {
+    pre.textContent = '← Selecione uma página acima para ver o código';
+    hint.style.display = 'none';
+    return;
+  }
+  var d = data[parseInt(idx)];
+  // Remove campos internos (_label, _url) antes de serializar
+  var clean = Object.assign({}, d);
+  delete clean._label; delete clean._url;
+  pre.textContent = '<script type="application/ld+json">\\n' + JSON.stringify(clean, null, 2) + '\\n<\\/script>';
+  hint.style.display = '';
+  document.getElementById(urlSpanId).textContent = d._url || d.url || '';
+}
+
+function showArticle(idx) {
+  _showDynamicSchema(idx, window.articleData, 'code-article', 'url-hint-article', 'url-article-text');
+}
+function showProduct(idx) {
+  _showDynamicSchema(idx, window.productData, 'code-product', 'url-hint-product', 'url-product-text');
+}
+function showService(idx) {
+  _showDynamicSchema(idx, window.serviceData, 'code-service', 'url-hint-service', 'url-service-text');
 }
 
 // ── Checklist LPs ────────────────────────────────────────────────
@@ -1198,6 +1159,114 @@ def _update_historico(kpis: dict):
     df.to_csv(path, index=False, encoding="utf-8")
 
 
+def _build_page_schemas(df_audit):
+    """Extrai páginas do CSV de auditoria e pré-preenche schemas para Article, Product e Service."""
+    if df_audit is None:
+        return [], [], []
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    ph = "← SUBSTITUIR"
+
+    def row_label(url: str, title: str) -> str:
+        path = url.replace("https://redefox.com.br", "").rstrip("/") or "/"
+        return f"{title[:50] + '…' if title and len(title) > 50 else title or path}"
+
+    article_data, product_data, service_data = [], [], []
+
+    for _, r in df_audit.iterrows():
+        url = str(r.get("url", "") or "")
+        title = str(r.get("title", "") or "")
+        h1 = str(r.get("h1", "") or "")
+        desc = str(r.get("meta_description", "") or "")
+        name = h1 or title or url
+
+        if "/blog/" in url:
+            article_data.append({
+                "_label": row_label(url, title),
+                "_url": url,
+                "@context": "https://schema.org",
+                "@type": "Article",
+                "headline": name[:110] if name else f"{ph}: Título do artigo",
+                "description": desc[:155] if desc else f"{ph}: Resumo do artigo",
+                "url": url,
+                "datePublished": f"{ph}: {today}",
+                "dateModified": f"{ph}: {today}",
+                "image": {
+                    "@type": "ImageObject",
+                    "url": f"{ph}: https://redefox.com.br/images/nome-imagem.jpg",
+                    "width": 1200,
+                    "height": 630,
+                },
+                "author": {"@type": "Organization", "name": "Rede Fox", "url": "https://redefox.com.br"},
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Rede Fox",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "https://redefox.com.br/images/logo-fox.png",
+                        "width": 300,
+                        "height": 60,
+                    },
+                },
+                "mainEntityOfPage": {"@type": "WebPage", "@id": url},
+            })
+
+        elif "/pecas/" in url or ("/pneus/" in url and any(c.isdigit() for c in url)):
+            product_data.append({
+                "_label": row_label(url, title),
+                "_url": url,
+                "@context": "https://schema.org",
+                "@type": "Product",
+                "name": name[:100] if name else f"{ph}: Nome do produto",
+                "description": desc[:155] if desc else f"{ph}: Descrição do produto",
+                "url": url,
+                "image": f"{ph}: https://redefox.com.br/images/produto.jpg",
+                "brand": {"@type": "Brand", "name": f"{ph}: Marca"},
+                "sku": f"{ph}: Código do produto",
+                "offers": {
+                    "@type": "Offer",
+                    "priceCurrency": "BRL",
+                    "price": f"{ph}: 0.00",
+                    "priceValidUntil": f"{ph}: {today[:4]}-12-31",
+                    "availability": "https://schema.org/InStock",
+                    "url": url,
+                    "seller": {"@type": "Organization", "name": "Rede Fox"},
+                },
+            })
+
+        elif "/servicos/" in url:
+            service_data.append({
+                "_label": row_label(url, title),
+                "_url": url,
+                "@context": "https://schema.org",
+                "@type": "Service",
+                "name": name[:100] if name else f"{ph}: Nome do serviço",
+                "serviceType": name[:100] if name else f"{ph}: Tipo do serviço",
+                "description": desc[:155] if desc else f"{ph}: Descrição do serviço",
+                "url": url,
+                "provider": {
+                    "@type": "Organization",
+                    "name": "Rede Fox",
+                    "url": "https://redefox.com.br",
+                    "telephone": f"{ph}: telefone da unidade",
+                },
+                "areaServed": [
+                    {"@type": "State", "name": "Rondônia"},
+                    {"@type": "State", "name": "Amazonas"},
+                    {"@type": "State", "name": "Acre"},
+                ],
+                "hasOfferCatalog": {
+                    "@type": "OfferCatalog",
+                    "name": name,
+                    "itemListElement": [
+                        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": f"{ph}: Sub-serviço 1"}},
+                    ],
+                },
+            })
+
+    return article_data, product_data, service_data
+
+
 def run():
     logger.info("Iniciando Dashboard Builder...")
 
@@ -1284,6 +1353,8 @@ def run():
             except Exception as e:
                 logger.warning("Erro ao carregar %s: %s", path, e)
 
+    article_data, product_data, service_data = _build_page_schemas(df_audit)
+
     template = Template(TEMPLATE)
     html = template.render(
         gerado_em=datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -1293,6 +1364,9 @@ def run():
         expansion_data=expansion_data,
         schemas_data=schemas_data,
         faq_data=faq_data,
+        article_data=article_data,
+        product_data=product_data,
+        service_data=service_data,
         reviews_disponivel=disponivel["reviews"],
         disponivel=disponivel,
     )
