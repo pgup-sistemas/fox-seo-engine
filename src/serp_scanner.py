@@ -412,6 +412,192 @@ def _parse_result(results: list[dict] | None, query: str, unidade: dict, servico
     }
 
 
+_HIST_CONC_FILE = Path("output/historico_concorrentes.csv")
+_ALERTAS_FILE   = Path("output/alertas_concorrencia.json")
+
+# Domínios genéricos que não representam concorrentes reais (diretórios, redes sociais)
+_DOMINIOS_IGNORAR = {
+    "facebook.com", "instagram.com", "youtube.com", "twitter.com", "tiktok.com",
+    "wikipedia.org", "g1.globo.com", "uol.com.br",
+    "lista.mercadolivre.com.br", "mercadolivre.com.br",
+    "solutudo.com.br", "listamais.com.br", "guiamais.com.br",
+    "telelistas.net", "apontador.com.br", "foursquare.com",
+    "encontraportovelho.com.br", "guiafix.com.br",
+}
+
+
+def _top3_set(row: pd.Series) -> set[str]:
+    """Retorna o conjunto de domínios Top 3 de uma linha do CSV, filtrando genéricos."""
+    dominios = set()
+    for col in ["concorrente_1", "concorrente_2", "concorrente_3"]:
+        v = row.get(col)
+        if pd.notna(v) and str(v) not in _DOMINIOS_IGNORAR:
+            dominios.add(str(v))
+    return dominios
+
+
+def _monitor_concorrentes(df_atual: pd.DataFrame):
+    """
+    Compara o snapshot atual com o histórico anterior.
+    Detecta: novo concorrente no Top3, Fox perdeu/ganhou posição, concorrente desapareceu.
+    Salva alertas em output/alertas_concorrencia.json e atualiza historico_concorrentes.csv.
+    """
+    import json as _json
+
+    hoje = datetime.now().strftime("%Y-%m-%d")
+    alertas: list[dict] = []
+
+    # Carregar snapshot anterior
+    df_prev: pd.DataFrame | None = None
+    if _HIST_CONC_FILE.exists():
+        try:
+            df_all = pd.read_csv(_HIST_CONC_FILE, encoding="utf-8")
+            datas = sorted(df_all["data_snapshot"].unique())
+            if len(datas) >= 1:
+                data_prev = datas[-1]
+                if data_prev != hoje:
+                    df_prev = df_all[df_all["data_snapshot"] == data_prev].copy()
+                    logger.info(f"Comparando com snapshot de {data_prev} ({len(df_prev)} queries).")
+        except Exception as e:
+            logger.warning(f"Erro ao carregar histórico de concorrentes: {e}")
+
+    if df_prev is not None:
+        prev_idx = {row["query"]: row for _, row in df_prev.iterrows()}
+
+        for _, row in df_atual.iterrows():
+            query = row["query"]
+            if query not in prev_idx:
+                continue
+
+            prev = prev_idx[query]
+            fox_antes = prev.get("posicao_fox")
+            fox_agora = row.get("posicao_fox")
+            top3_antes = _top3_set(prev)
+            top3_agora  = _top3_set(row)
+
+            # Fox perdeu posição
+            if pd.notna(fox_antes) and pd.notna(fox_agora) and int(fox_agora) > int(fox_antes):
+                alertas.append({
+                    "tipo": "FOX_PERDEU_POSICAO",
+                    "severidade": "ALTA" if int(fox_agora) > int(fox_antes) + 1 else "MEDIA",
+                    "query": query,
+                    "cidade": row["cidade"],
+                    "servico": row["servico"],
+                    "antes": int(fox_antes),
+                    "agora": int(fox_agora),
+                    "detalhe": f"Fox caiu da posição {int(fox_antes)} para {int(fox_agora)}",
+                    "data": hoje,
+                })
+
+            # Fox ganhou posição
+            elif pd.notna(fox_antes) and pd.notna(fox_agora) and int(fox_agora) < int(fox_antes):
+                alertas.append({
+                    "tipo": "FOX_GANHOU_POSICAO",
+                    "severidade": "POSITIVO",
+                    "query": query,
+                    "cidade": row["cidade"],
+                    "servico": row["servico"],
+                    "antes": int(fox_antes),
+                    "agora": int(fox_agora),
+                    "detalhe": f"Fox subiu da posição {int(fox_antes)} para {int(fox_agora)}",
+                    "data": hoje,
+                })
+
+            # Fox entrou no Top 10 (estava ausente)
+            elif pd.isna(fox_antes) and pd.notna(fox_agora):
+                alertas.append({
+                    "tipo": "FOX_ENTROU_TOP10",
+                    "severidade": "POSITIVO",
+                    "query": query,
+                    "cidade": row["cidade"],
+                    "servico": row["servico"],
+                    "antes": None,
+                    "agora": int(fox_agora),
+                    "detalhe": f"Fox entrou no Top 10 na posição {int(fox_agora)}",
+                    "data": hoje,
+                })
+
+            # Fox saiu do Top 10
+            elif pd.notna(fox_antes) and pd.isna(fox_agora):
+                alertas.append({
+                    "tipo": "FOX_SAIU_TOP10",
+                    "severidade": "ALTA",
+                    "query": query,
+                    "cidade": row["cidade"],
+                    "servico": row["servico"],
+                    "antes": int(fox_antes),
+                    "agora": None,
+                    "detalhe": "Fox saiu do Top 10",
+                    "data": hoje,
+                })
+
+            # Novo concorrente real no Top 3
+            novos = top3_agora - top3_antes
+            for dom in novos:
+                alertas.append({
+                    "tipo": "NOVO_CONCORRENTE_TOP3",
+                    "severidade": "MEDIA",
+                    "query": query,
+                    "cidade": row["cidade"],
+                    "servico": row["servico"],
+                    "concorrente": dom,
+                    "detalhe": f"{dom} entrou no Top 3 para esta busca",
+                    "data": hoje,
+                })
+
+            # Concorrente real sumiu do Top 3 (oportunidade)
+            sumidos = top3_antes - top3_agora
+            for dom in sumidos:
+                alertas.append({
+                    "tipo": "CONCORRENTE_SAIU_TOP3",
+                    "severidade": "POSITIVO",
+                    "query": query,
+                    "cidade": row["cidade"],
+                    "servico": row["servico"],
+                    "concorrente": dom,
+                    "detalhe": f"{dom} saiu do Top 3 — janela de oportunidade",
+                    "data": hoje,
+                })
+
+    # Resumo no log
+    por_tipo: dict[str, int] = {}
+    for a in alertas:
+        por_tipo[a["tipo"]] = por_tipo.get(a["tipo"], 0) + 1
+    if alertas:
+        logger.info(f"Monitor Concorrentes: {len(alertas)} movimentações detectadas — {por_tipo}")
+    else:
+        logger.info("Monitor Concorrentes: sem movimentações (primeira execução ou dados iguais).")
+
+    # Salvar alertas
+    _ALERTAS_FILE.parent.mkdir(exist_ok=True)
+    _ALERTAS_FILE.write_text(
+        _json.dumps({"data": hoje, "total": len(alertas), "alertas": alertas},
+                    ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    # Atualizar histórico: acrescentar snapshot de hoje
+    snapshot = df_atual[["query", "cidade", "uf", "servico", "linha",
+                           "posicao_fox", "concorrente_1", "concorrente_2", "concorrente_3"]].copy()
+    snapshot["data_snapshot"] = hoje
+    if _HIST_CONC_FILE.exists():
+        try:
+            df_hist = pd.read_csv(_HIST_CONC_FILE, encoding="utf-8")
+            # Manter apenas as últimas 8 semanas para não crescer indefinidamente
+            datas_unicas = sorted(df_hist["data_snapshot"].unique())
+            if len(datas_unicas) >= 8:
+                datas_manter = datas_unicas[-(8-1):]
+                df_hist = df_hist[df_hist["data_snapshot"].isin(datas_manter)]
+            df_hist = pd.concat([df_hist, snapshot], ignore_index=True)
+        except Exception:
+            df_hist = snapshot
+    else:
+        df_hist = snapshot
+
+    df_hist.to_csv(_HIST_CONC_FILE, index=False, encoding="utf-8")
+    logger.info(f"Histórico de concorrentes atualizado: {len(df_hist)} registros.")
+
+
 def run():
     logger.info("Iniciando SERP Scanner...")
     quota = _load_quota()
@@ -473,6 +659,9 @@ def run():
     df = pd.DataFrame(records)
     df.to_csv("output/3_serp_concorrencia_local.csv", index=False, encoding="utf-8")
     logger.info(f"SERP: {len(df)} queries salvas.")
+
+    # Monitoramento de concorrentes
+    _monitor_concorrentes(df)
 
     # Calcular Share of Voice
     total_queries = len(df)

@@ -308,6 +308,37 @@ TEMPLATE = """<!DOCTYPE html>
   </div>
 </div>
 
+<!-- Alertas de Concorrência -->
+<div class="card p-4 mb-6">
+  <h3 class="text-sm font-semibold mb-3" style="color:var(--muted);display:flex;align-items:center;gap:6px">
+    <svg style="width:14px;height:14px;color:#f59e0b;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+    Movimentações de Concorrentes — Última Semana
+  </h3>
+  {% if alertas_concorrencia and alertas_concorrencia.total > 0 %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px">
+    {% for a in alertas_concorrencia.alertas[:20] %}
+    <div style="border:1px solid {% if a.severidade == 'ALTA' %}#ef4444{% elif a.severidade == 'POSITIVO' %}#22c55e{% else %}#f59e0b{% endif %};border-radius:8px;padding:10px 12px;background:var(--card)">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:{% if a.severidade == 'ALTA' %}rgba(239,68,68,.15){% elif a.severidade == 'POSITIVO' %}rgba(34,197,94,.15){% else %}rgba(245,158,11,.15){% endif %};color:{% if a.severidade == 'ALTA' %}#ef4444{% elif a.severidade == 'POSITIVO' %}#22c55e{% else %}#f59e0b{% endif %}">{{ a.tipo | replace('_',' ') }}</span>
+        <span style="font-size:11px;color:var(--muted)">{{ a.cidade }}</span>
+      </div>
+      <p style="font-size:12px;margin:0;line-height:1.4">{{ a.detalhe }}</p>
+      <p style="font-size:11px;color:var(--muted);margin:4px 0 0;opacity:.7">{{ a.servico }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% if alertas_concorrencia.total > 20 %}
+  <p style="font-size:11px;color:var(--muted);margin-top:10px;opacity:.7">+{{ alertas_concorrencia.total - 20 }} movimentações adicionais em <code>output/alertas_concorrencia.json</code></p>
+  {% endif %}
+  {% elif alertas_concorrencia and alertas_concorrencia.total == 0 %}
+  <div style="padding:20px;text-align:center">
+    <p style="font-size:13px;color:var(--muted)">{% if alertas_concorrencia.nota %}{{ alertas_concorrencia.nota }}{% else %}Nenhuma movimentação detectada esta semana.{% endif %}</p>
+  </div>
+  {% else %}
+  {{ empty_state('Sem dados de movimentações.','O monitor compara snapshots semanais. Os alertas aparecerão a partir da segunda execução do pipeline.') }}
+  {% endif %}
+</div>
+
 <!-- Reviews + Evolução SoV -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
   <div class="card p-4">
@@ -1361,6 +1392,15 @@ def run():
     df_reviews = _safe_load_csv("output/7_reviews_monitor.csv")
     df_hist = _safe_load_csv("output/historico_evolucao.csv")
 
+    # Alertas de concorrência
+    alertas_concorrencia = None
+    _alertas_path = Path("output/alertas_concorrencia.json")
+    if _alertas_path.exists():
+        try:
+            alertas_concorrencia = json.loads(_alertas_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
     disponivel = {
         "auditoria": df_audit is not None,
         "gsc": df_gsc is not None,
@@ -1453,6 +1493,7 @@ def run():
         service_data=service_data,
         reviews_disponivel=disponivel["reviews"],
         disponivel=disponivel,
+        alertas_concorrencia=alertas_concorrencia,
     )
 
     Path("docs").mkdir(exist_ok=True)
