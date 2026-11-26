@@ -305,6 +305,82 @@ def _do_search(query: str, quota: dict, cache: dict) -> list[dict] | None:
     return results
 
 
+# CTR médio por posição orgânica (fonte: Backlinko 2024 + AWR BR local).
+# Usado para estimar visitas potenciais sem depender de API externa.
+_CTR_BY_POSITION = {
+    1: 0.278, 2: 0.152, 3: 0.111, 4: 0.078, 5: 0.058,
+    6: 0.044, 7: 0.033, 8: 0.025, 9: 0.019, 10: 0.015,
+}
+
+# Volume mensal estimado por tipo de query (baseado em médias regionais BR — cidades médias AM/RO/AC).
+# Ranges conservadores: cidades ~100k–600k hab, serviços automotivos locais.
+_VOLUME_EST = {
+    # serviço × cidade: (min, max) → usa média
+    "default_carro":    (40, 150),   # serviços gerais carros em cidades médias
+    "default_caminhao": (20, 80),    # serviços pesados, mercado menor
+    "pneu_medida":      (30, 120),   # busca por medida específica
+    "manaus":           2.5,         # multiplicador: Manaus tem ~2,5x o volume das demais
+    "porto_velho":      1.8,
+    "rio_branco":       1.4,
+}
+
+
+def _estimate_volume(query: str, servico: dict, unidade: dict) -> int:
+    """Retorna volume mensal estimado de buscas para a query."""
+    cidade = unidade["cidade"].lower()
+    linha = servico.get("linha", servico.get("linhas", ["carros"])[0] if isinstance(servico.get("linhas"), list) else "carros")
+
+    if "pneu" in query.lower() and any(c.isdigit() for c in query):
+        base_range = _VOLUME_EST["pneu_medida"]
+    elif "caminhao" in str(linha).lower() or "caminhões" in str(linha).lower():
+        base_range = _VOLUME_EST["default_caminhao"]
+    else:
+        base_range = _VOLUME_EST["default_carro"]
+
+    base = int((base_range[0] + base_range[1]) / 2)
+
+    mult = 1.0
+    if "manaus" in cidade:
+        mult = _VOLUME_EST["manaus"]
+    elif "porto velho" in cidade:
+        mult = _VOLUME_EST["porto_velho"]
+    elif "rio branco" in cidade:
+        mult = _VOLUME_EST["rio_branco"]
+
+    return max(1, int(base * mult))
+
+
+def _calc_opportunity(volume: int, fox_pos: int | None) -> dict:
+    """
+    Visitas potenciais: visitas que a Fox GANHARIA ao chegar à posição 1.
+    Se já está em #1, mostra o que já captura.
+    Score de oportunidade: 0–100 (volume × gap de posição).
+    """
+    ctr_pos1 = _CTR_BY_POSITION[1]
+    visitas_pos1 = int(volume * ctr_pos1)
+
+    if fox_pos is None:
+        # Fox ausente do Top 10 — oportunidade máxima
+        visitas_atuais = 0
+        visitas_ganho = visitas_pos1
+        score = min(100, int((volume / 150) * 100))  # normalizado pelo volume máximo esperado
+    else:
+        ctr_atual = _CTR_BY_POSITION.get(fox_pos, 0.01)
+        visitas_atuais = int(volume * ctr_atual)
+        visitas_ganho = visitas_pos1 - visitas_atuais
+        # Quanto maior o gap de posição e o volume, maior o score
+        gap_factor = (fox_pos - 1) / 9  # 0 se pos=1, 1 se pos=10
+        score = min(100, int(gap_factor * (volume / 150) * 100))
+
+    return {
+        "volume_mensal_est": volume,
+        "visitas_atuais_est": visitas_atuais,
+        "visitas_potenciais_pos1": visitas_pos1,
+        "visitas_ganho_est": max(0, visitas_ganho),
+        "oportunidade_score": score,
+    }
+
+
 def _parse_result(results: list[dict] | None, query: str, unidade: dict, servico: dict) -> dict:
     from urllib.parse import urlparse
     fox_pos = None
@@ -318,6 +394,10 @@ def _parse_result(results: list[dict] | None, query: str, unidade: dict, servico
             else:
                 if domain not in concorrentes:
                     concorrentes.append(domain)
+
+    volume = _estimate_volume(query, servico, unidade)
+    opp = _calc_opportunity(volume, fox_pos)
+
     return {
         "query": query,
         "cidade": unidade["cidade"],
@@ -328,6 +408,7 @@ def _parse_result(results: list[dict] | None, query: str, unidade: dict, servico
         "concorrente_1": concorrentes[0] if len(concorrentes) > 0 else None,
         "concorrente_2": concorrentes[1] if len(concorrentes) > 1 else None,
         "concorrente_3": concorrentes[2] if len(concorrentes) > 2 else None,
+        **opp,
     }
 
 

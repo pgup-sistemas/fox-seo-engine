@@ -280,6 +280,16 @@ TEMPLATE = """<!DOCTYPE html>
   </div>
 </div>
 
+<!-- Gráfico oportunidade de tráfego -->
+<div class="card p-4 mb-6">
+  <h3 class="text-sm font-semibold mb-1" style="color:var(--muted);display:flex;align-items:center;gap:6px">
+    <svg style="width:14px;height:14px;color:#22c55e;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0 3.182-5.511m-3.182 5.51-5.511-3.181"/></svg>
+    Top 15 Oportunidades de Tráfego Orgânico
+  </h3>
+  <p class="text-xs mb-3" style="color:var(--muted);opacity:.7">Visitas mensais estimadas que a Fox perde por não estar no Top 1 nessas buscas. <span style="opacity:.6">Volume baseado em médias regionais AM/RO/AC + CTR por posição (Backlinko 2024).</span></p>
+  <div id="chart-oportunidade">{% if not disponivel.serp %}{{ empty_state('Dados SERP indisponíveis.','Configure ao menos uma chave de busca para visualizar as oportunidades de tráfego.') }}{% endif %}</div>
+</div>
+
 <!-- Gráficos linha 3 -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
   <div class="card p-4">
@@ -360,6 +370,7 @@ function renderChart(divId, figJson) {
 renderChart('chart-cobertura', CHARTS.cobertura);
 renderChart('chart-saude', CHARTS.saude);
 renderChart('chart-concorrentes', CHARTS.concorrentes);
+renderChart('chart-oportunidade', CHARTS.oportunidade);
 renderChart('chart-historico', CHARTS.historico);
 renderChart('chart-vitals', CHARTS.vitals);
 renderChart('chart-sov-cidade', CHARTS.sov_cidade);
@@ -455,7 +466,7 @@ function applyTheme(theme) {
   const paperBg = isLight ? '#ffffff' : '#141922';
   const fontColor = isLight ? '#0f172a' : '#e6eaf0';
   const plotUpdate = { paper_bgcolor: paperBg, plot_bgcolor: bg, font: { color: fontColor } };
-  ['chart-cobertura','chart-saude','chart-concorrentes','chart-historico',
+  ['chart-cobertura','chart-saude','chart-concorrentes','chart-oportunidade','chart-historico',
    'chart-vitals','chart-sov-cidade','chart-sov','chart-reviews'].forEach(id => {
     const el = document.getElementById(id);
     if (el && el._fullLayout) Plotly.relayout(id, plotUpdate);
@@ -1070,6 +1081,36 @@ def _chart_concorrentes(df_serp: pd.DataFrame | None) -> str | None:
     return fig.to_json()
 
 
+def _chart_oportunidade(df_serp: pd.DataFrame | None) -> str | None:
+    """Top 15 queries por visitas_ganho_est — onde a Fox mais perde tráfego."""
+    if df_serp is None or "visitas_ganho_est" not in df_serp.columns:
+        return None
+    df = (df_serp[df_serp["posicao_fox"].isna() | (df_serp["posicao_fox"] > 1)]
+          .sort_values("visitas_ganho_est", ascending=False)
+          .head(15))
+    if df.empty:
+        return None
+    labels = (df["servico"] + " — " + df["cidade"]).tolist()
+    ganho = df["visitas_ganho_est"].tolist()
+    atuais = df["visitas_atuais_est"].tolist()
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        name="Visitas atuais/mês", x=atuais, y=labels, orientation="h",
+        marker_color="#3b82f6",
+    ))
+    fig.add_trace(go.Bar(
+        name="Visitas a ganhar/mês", x=ganho, y=labels, orientation="h",
+        marker_color="#e31b23",
+    ))
+    fig.update_layout(
+        barmode="stack", height=420,
+        margin=dict(t=20, b=20, l=200, r=20),
+        yaxis=dict(autorange="reversed"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
+    return fig.to_json()
+
+
 def _chart_historico(df_hist: pd.DataFrame | None) -> str | None:
     if df_hist is None:
         return None
@@ -1371,6 +1412,7 @@ def run():
         "cobertura": _chart_cobertura(df_expansion),
         "saude": _chart_saude(df_audit),
         "concorrentes": _chart_concorrentes(df_serp),
+        "oportunidade": _chart_oportunidade(df_serp),
         "historico": _chart_historico(df_hist),
         "vitals": _chart_vitals(df_vitals),
         "sov": _chart_sov(df_hist, sov),
