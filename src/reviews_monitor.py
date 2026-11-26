@@ -1,7 +1,8 @@
+import json
 import logging
 import os
 import time
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -12,6 +13,21 @@ from config.matriz_negocio import UNIDADES
 logger = logging.getLogger(__name__)
 
 PLACES_BASE = "https://maps.googleapis.com/maps/api/place"
+PLACE_ID_CACHE = Path(".cache/place_ids.json")
+
+
+def _load_place_id_cache() -> dict:
+    if PLACE_ID_CACHE.exists():
+        try:
+            return json.loads(PLACE_ID_CACHE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+
+def _save_place_id_cache(cache: dict):
+    PLACE_ID_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    PLACE_ID_CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def _find_place_id(nome: str, cidade: str, key: str) -> str | None:
@@ -83,11 +99,22 @@ def run():
 
     logger.info("Iniciando Reviews Monitor...")
     previous = _load_previous()
+    place_id_cache = _load_place_id_cache()
     records = []
 
     for unidade in UNIDADES:
-        place_id = _find_place_id(unidade["nome"], unidade["cidade"], key)
-        time.sleep(0.2)
+        cache_key = unidade["nome"]
+        cached_id = place_id_cache.get(cache_key)
+
+        if cached_id:
+            place_id = cached_id
+            logger.debug(f"place_id em cache: {unidade['nome']} → {place_id}")
+        else:
+            place_id = _find_place_id(unidade["nome"], unidade["cidade"], key)
+            if place_id:
+                place_id_cache[cache_key] = place_id
+                _save_place_id_cache(place_id_cache)
+            time.sleep(0.2)
 
         rating = None
         total = 0

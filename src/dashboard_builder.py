@@ -146,6 +146,11 @@ TEMPLATE = """<!DOCTYPE html>
   .guide-card h4 svg { flex-shrink:0; }
   .semaforo td:nth-child(2) { font-weight:600; width:90px; }
   .semaforo tr:last-child td { border-bottom:none; }
+  .semaforo tr.ativo { background:rgba(255,255,255,0.05); border-radius:6px; }
+  .semaforo tr.ativo td { border-bottom-color:transparent; }
+  .semaforo tr.ativo td:first-child .dot { width:13px; height:13px; box-shadow:0 0 6px 2px currentColor; }
+  .semaforo tr.ativo td:nth-child(2) { color:var(--text); }
+  .semaforo tr.ativo td:nth-child(3)::after { content:' ← atual'; font-size:10px; opacity:.6; }
   .guide-action { background:var(--bg); border-left:3px solid var(--fox-red); padding:8px 12px; border-radius:0 6px 6px 0; font-size:12px; color:var(--text); line-height:1.6; }
   .guide-action strong { color:var(--fox-red); display:block; margin-bottom:2px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
   .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:28px 0 12px; }
@@ -391,6 +396,43 @@ $(document).ready(function() {
     table.column(0).search(this.value).draw();
   });
 });
+
+// ── Semáforo — destacar linha ativa com base nos KPIs reais ─────
+(function() {
+  var kpiEl = function(label) {
+    var els = document.querySelectorAll('.kpi-label');
+    for (var i = 0; i < els.length; i++) {
+      if (els[i].textContent.trim().indexOf(label) !== -1) {
+        var val = els[i].nextElementSibling;
+        return val ? parseFloat(val.textContent.replace('%','').replace(',','.')) : null;
+      }
+    }
+    return null;
+  };
+  var totalPages = kpiEl('Mapeadas');
+  var semSchema  = kpiEl('sem Schema');
+  var schemaPct  = (totalPages && totalPages > 0 && semSchema !== null)
+    ? Math.round((totalPages - semSchema) / totalPages * 100) : null;
+
+  var kpis = {
+    sov:        kpiEl('Share of Voice'),
+    cobertura:  kpiEl('Cobertura Local'),
+    lps:        kpiEl('Landing Pages'),
+    sem_schema: semSchema,
+    schema_pct: schemaPct,
+  };
+
+  document.querySelectorAll('table[data-semaforo]').forEach(function(tbl) {
+    var key = tbl.getAttribute('data-semaforo');
+    var val = kpis[key];
+    if (val === null || val === undefined || isNaN(val)) return;
+    tbl.querySelectorAll('tr[data-min]').forEach(function(tr) {
+      var min = parseFloat(tr.getAttribute('data-min'));
+      var max = parseFloat(tr.getAttribute('data-max'));
+      if (val >= min && val < max) tr.classList.add('ativo');
+    });
+  });
+})();
 
 // ── Troca de abas ───────────────────────────────────────────────
 function switchTab(name, btn) {
@@ -773,10 +815,10 @@ function copyEnc(btn) {
     <div class="guide-card">
       <h4><svg style="width:15px;height:15px;color:#e31b23" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>Share of Voice</h4>
       <p class="desc">Percentual das buscas locais monitoradas em que a Fox aparece no Top 10 do Google. É o termômetro geral da visibilidade regional — um número resume o impacto de todas as ações de SEO.</p>
-      <table class="semaforo">
-        <tr><td><span class="dot dot-g"></span></td><td>≥ 60%</td><td>Liderança regional consolidada</td></tr>
-        <tr><td><span class="dot dot-y"></span></td><td>30–60%</td><td>Crescimento ativo — priorizar criação de LPs</td></tr>
-        <tr><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Crítico — concorrentes dominam as buscas</td></tr>
+      <table class="semaforo" data-semaforo="sov">
+        <tr data-min="60" data-max="999"><td><span class="dot dot-g"></span></td><td>≥ 60%</td><td>Liderança regional consolidada</td></tr>
+        <tr data-min="30" data-max="60"><td><span class="dot dot-y"></span></td><td>30–60%</td><td>Crescimento ativo — priorizar criação de LPs</td></tr>
+        <tr data-min="0"  data-max="30"><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Crítico — concorrentes dominam as buscas</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Aprovar a criação das landing pages do plano de expansão. Cada LP publicada aumenta o SOV em ~0,5–1 ponto percentual.</div>
     </div>
@@ -784,10 +826,10 @@ function copyEnc(btn) {
     <div class="guide-card">
       <h4><svg style="width:15px;height:15px;color:#3b82f6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>Cobertura Local</h4>
       <p class="desc">% das combinações cidade × serviço que já possuem página dedicada no site. Uma cobertura baixa significa oportunidades de tráfego orgânico não aproveitadas.</p>
-      <table class="semaforo">
-        <tr><td><span class="dot dot-g"></span></td><td>≥ 70%</td><td>Presença digital bem distribuída</td></tr>
-        <tr><td><span class="dot dot-y"></span></td><td>30–70%</td><td>Expansão em andamento</td></tr>
-        <tr><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Alta perda de tráfego potencial</td></tr>
+      <table class="semaforo" data-semaforo="cobertura">
+        <tr data-min="70" data-max="999"><td><span class="dot dot-g"></span></td><td>≥ 70%</td><td>Presença digital bem distribuída</td></tr>
+        <tr data-min="30" data-max="70"><td><span class="dot dot-y"></span></td><td>30–70%</td><td>Expansão em andamento</td></tr>
+        <tr data-min="0"  data-max="30"><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Alta perda de tráfego potencial</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Consultar a tabela "Plano de Expansão" para ver quais combinações estão ausentes por cidade e priorizar as de maior volume de busca.</div>
     </div>
@@ -795,10 +837,10 @@ function copyEnc(btn) {
     <div class="guide-card">
       <h4><svg style="width:15px;height:15px;color:#34d399" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Landing Pages a Criar</h4>
       <p class="desc">Número de páginas cidade × serviço recomendadas pelo sistema que ainda não existem no site. Cada página ausente é uma busca local que a Fox perde para concorrentes.</p>
-      <table class="semaforo">
-        <tr><td><span class="dot dot-g"></span></td><td>0–20</td><td>Lacunas mínimas</td></tr>
-        <tr><td><span class="dot dot-y"></span></td><td>20–60</td><td>Expansão necessária</td></tr>
-        <tr><td><span class="dot dot-r"></span></td><td>&gt; 60</td><td>Grande oportunidade inexplorada</td></tr>
+      <table class="semaforo" data-semaforo="lps">
+        <tr data-min="0"  data-max="20"><td><span class="dot dot-g"></span></td><td>0–20</td><td>Lacunas mínimas</td></tr>
+        <tr data-min="20" data-max="60"><td><span class="dot dot-y"></span></td><td>20–60</td><td>Expansão necessária</td></tr>
+        <tr data-min="60" data-max="9999"><td><span class="dot dot-r"></span></td><td>&gt; 60</td><td>Grande oportunidade inexplorada</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Usar os schemas JSON-LD e FAQs gerados em <code>output/5_schemas_jsonld_sugeridos.json</code> para agilizar a publicação das páginas.</div>
     </div>
@@ -806,10 +848,10 @@ function copyEnc(btn) {
     <div class="guide-card">
       <h4><svg style="width:15px;height:15px;color:#fbbf24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>Páginas sem Schema.org</h4>
       <p class="desc">Quantidade de páginas sem marcação estruturada (Schema.org tipo AutoRepair ou LocalBusiness). Páginas com schema têm até 20% mais chances de aparecer no Google Maps Pack.</p>
-      <table class="semaforo">
-        <tr><td><span class="dot dot-g"></span></td><td>0–10</td><td>Cobertura de schema adequada</td></tr>
-        <tr><td><span class="dot dot-y"></span></td><td>10–50</td><td>Implementação parcial</td></tr>
-        <tr><td><span class="dot dot-r"></span></td><td>&gt; 50</td><td>Risco de queda no Maps Pack</td></tr>
+      <table class="semaforo" data-semaforo="sem_schema">
+        <tr data-min="0"  data-max="10"><td><span class="dot dot-g"></span></td><td>0–10</td><td>Cobertura de schema adequada</td></tr>
+        <tr data-min="10" data-max="50"><td><span class="dot dot-y"></span></td><td>10–50</td><td>Implementação parcial</td></tr>
+        <tr data-min="50" data-max="9999"><td><span class="dot dot-r"></span></td><td>&gt; 50</td><td>Risco de queda no Maps Pack</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Repassar ao time de desenvolvimento o arquivo <code>output/5_schemas_jsonld_sugeridos.json</code> com os schemas prontos para inserção.</div>
     </div>
@@ -903,10 +945,10 @@ function copyEnc(btn) {
     <div class="guide-card">
       <h4><svg style="width:15px;height:15px;color:#3b82f6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>Saúde Técnica On-Page</h4>
       <p class="desc">Proporção de páginas com Schema.org implementado versus sem schema. O gráfico de rosca mostra rapidamente se a presença técnica estruturada está adequada.</p>
-      <table class="semaforo">
-        <tr><td><span class="dot dot-g"></span></td><td>&gt; 70% schema</td><td>Cobertura estruturada adequada</td></tr>
-        <tr><td><span class="dot dot-y"></span></td><td>30–70%</td><td>Implementação parcial</td></tr>
-        <tr><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Alta exposição a perda de posição</td></tr>
+      <table class="semaforo" data-semaforo="schema_pct">
+        <tr data-min="70" data-max="999"><td><span class="dot dot-g"></span></td><td>&gt; 70% schema</td><td>Cobertura estruturada adequada</td></tr>
+        <tr data-min="30" data-max="70"><td><span class="dot dot-y"></span></td><td>30–70%</td><td>Implementação parcial</td></tr>
+        <tr data-min="0"  data-max="30"><td><span class="dot dot-r"></span></td><td>&lt; 30%</td><td>Alta exposição a perda de posição</td></tr>
       </table>
       <div class="guide-action"><strong>Ação recomendada</strong>Implementar os schemas do arquivo <code>output/5_schemas_jsonld_sugeridos.json</code> nas páginas de unidades como prioridade — são os schemas com maior impacto no Maps Pack local.</div>
     </div>
