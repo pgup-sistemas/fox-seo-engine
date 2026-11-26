@@ -280,7 +280,27 @@ TEMPLATE = """<!DOCTYPE html>
   </div>
 </div>
 
-<!-- Gráfico oportunidade de tráfego -->
+<!-- Intenção comercial + oportunidade -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+  <div class="card p-4">
+    <h3 class="text-sm font-semibold mb-1" style="color:var(--muted);display:flex;align-items:center;gap:6px">
+      <svg style="width:14px;height:14px;color:#22c55e;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Intenção Comercial das Buscas
+    </h3>
+    <p class="text-xs mb-3" style="color:var(--muted);opacity:.7">Fox presente (escuro) vs ausente (claro) por tipo de intenção</p>
+    <div id="chart-intencao">{% if not disponivel.serp %}{{ empty_state('Sem dados SERP.','') }}{% endif %}</div>
+  </div>
+  <div class="card p-4 md:col-span-2">
+    <h3 class="text-sm font-semibold mb-1" style="color:var(--muted);display:flex;align-items:center;gap:6px">
+      <svg style="width:14px;height:14px;color:#f97316;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0 3.182-5.511m-3.182 5.51-5.511-3.181"/></svg>
+      Top Oportunidades COMPRA &amp; SERVIÇO — Visitas a Ganhar/mês
+    </h3>
+    <p class="text-xs mb-3" style="color:var(--muted);opacity:.7">Ordenado por <code>oportunidade_score</code> (volume × posição × intenção). Score COMPRA tem peso 1,5×.</p>
+    <div id="chart-intencao-top">{% if not disponivel.serp %}{{ empty_state('Sem dados SERP.','') }}{% endif %}</div>
+  </div>
+</div>
+
+<!-- Gráfico oportunidade de tráfego (todas intenções) -->
 <div class="card p-4 mb-6">
   <h3 class="text-sm font-semibold mb-1" style="color:var(--muted);display:flex;align-items:center;gap:6px">
     <svg style="width:14px;height:14px;color:#22c55e;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0 3.182-5.511m-3.182 5.51-5.511-3.181"/></svg>
@@ -400,6 +420,8 @@ function renderChart(divId, figJson) {
 
 renderChart('chart-cobertura', CHARTS.cobertura);
 renderChart('chart-saude', CHARTS.saude);
+renderChart('chart-intencao', CHARTS.intencao);
+renderChart('chart-intencao-top', CHARTS.intencao_top);
 renderChart('chart-concorrentes', CHARTS.concorrentes);
 renderChart('chart-oportunidade', CHARTS.oportunidade);
 renderChart('chart-historico', CHARTS.historico);
@@ -497,7 +519,8 @@ function applyTheme(theme) {
   const paperBg = isLight ? '#ffffff' : '#141922';
   const fontColor = isLight ? '#0f172a' : '#e6eaf0';
   const plotUpdate = { paper_bgcolor: paperBg, plot_bgcolor: bg, font: { color: fontColor } };
-  ['chart-cobertura','chart-saude','chart-concorrentes','chart-oportunidade','chart-historico',
+  ['chart-cobertura','chart-saude','chart-intencao','chart-intencao-top',
+   'chart-concorrentes','chart-oportunidade','chart-historico',
    'chart-vitals','chart-sov-cidade','chart-sov','chart-reviews'].forEach(id => {
     const el = document.getElementById(id);
     if (el && el._fullLayout) Plotly.relayout(id, plotUpdate);
@@ -1090,6 +1113,80 @@ def _chart_saude(df_audit: pd.DataFrame | None) -> str | None:
     return fig.to_json()
 
 
+def _chart_intencao(df_serp: pd.DataFrame | None) -> str | None:
+    """Rosca: distribuição de intenção × Fox presente/ausente."""
+    if df_serp is None or "intencao" not in df_serp.columns:
+        return None
+
+    # Ordem e cores fixas por intenção
+    ordem = ["COMPRA", "SERVIÇO", "LOCAL", "INFORMACIONAL"]
+    cores_presente = {"COMPRA": "#22c55e", "SERVIÇO": "#3b82f6",
+                      "LOCAL": "#a78bfa", "INFORMACIONAL": "#94a3b8"}
+    cores_ausente  = {"COMPRA": "#86efac", "SERVIÇO": "#93c5fd",
+                      "LOCAL": "#c4b5fd", "INFORMACIONAL": "#cbd5e1"}
+
+    fig = go.Figure()
+    for intencao in ordem:
+        sub = df_serp[df_serp["intencao"] == intencao]
+        if sub.empty:
+            continue
+        presente = int(sub["posicao_fox"].notna().sum())
+        ausente  = len(sub) - presente
+        sov = round(presente / len(sub) * 100, 1)
+        label = f"{intencao}<br>SOV {sov}%"
+
+        fig.add_trace(go.Bar(
+            name=f"{intencao} — presente",
+            x=[presente], y=[label], orientation="h",
+            marker_color=cores_presente[intencao],
+            text=[f"{presente}"], textposition="inside",
+            showlegend=False,
+        ))
+        fig.add_trace(go.Bar(
+            name=f"{intencao} — ausente",
+            x=[ausente], y=[label], orientation="h",
+            marker_color=cores_ausente[intencao],
+            text=[f"{ausente}"], textposition="inside",
+            showlegend=False,
+            opacity=0.5,
+        ))
+
+    fig.update_layout(
+        barmode="stack", height=240,
+        margin=dict(t=10, b=10, l=130, r=80),
+        yaxis=dict(autorange="reversed"),
+        xaxis=dict(title="Nº de queries"),
+    )
+    return fig.to_json()
+
+
+def _chart_intencao_top(df_serp: pd.DataFrame | None) -> str | None:
+    """Top 10 queries COMPRA + SERVIÇO ordenadas por oportunidade_score."""
+    if df_serp is None or "intencao" not in df_serp.columns:
+        return None
+    df = df_serp[df_serp["intencao"].isin(["COMPRA", "SERVIÇO"])].copy()
+    df = df[df["posicao_fox"].isna() | (df["posicao_fox"] > 1)]
+    df = df.sort_values("oportunidade_score", ascending=False).head(10)
+    if df.empty:
+        return None
+    cores = {"COMPRA": "#22c55e", "SERVIÇO": "#3b82f6"}
+    labels = (df["servico"] + " — " + df["cidade"]).tolist()
+    fig = go.Figure(go.Bar(
+        x=df["visitas_ganho_est"].tolist(),
+        y=labels,
+        orientation="h",
+        marker_color=[cores.get(i, "#94a3b8") for i in df["intencao"].tolist()],
+        text=[f"Score {s}" for s in df["oportunidade_score"].tolist()],
+        textposition="outside",
+        customdata=df[["intencao", "score_conversao"]].values.tolist(),
+        hovertemplate="<b>%{y}</b><br>Visitas a ganhar: %{x}/mês<br>Intenção: %{customdata[0]}<extra></extra>",
+    ))
+    fig.update_layout(height=360, margin=dict(t=10, b=10, l=200, r=80),
+                      yaxis=dict(autorange="reversed"),
+                      xaxis=dict(title="Visitas estimadas a ganhar/mês"))
+    return fig.to_json()
+
+
 def _chart_concorrentes(df_serp: pd.DataFrame | None) -> str | None:
     if df_serp is None:
         return None
@@ -1451,6 +1548,8 @@ def run():
     charts = {
         "cobertura": _chart_cobertura(df_expansion),
         "saude": _chart_saude(df_audit),
+        "intencao": _chart_intencao(df_serp),
+        "intencao_top": _chart_intencao_top(df_serp),
         "concorrentes": _chart_concorrentes(df_serp),
         "oportunidade": _chart_oportunidade(df_serp),
         "historico": _chart_historico(df_hist),

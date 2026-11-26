@@ -350,35 +350,103 @@ def _estimate_volume(query: str, servico: dict, unidade: dict) -> int:
     return max(1, int(base * mult))
 
 
-def _calc_opportunity(volume: int, fox_pos: int | None) -> dict:
+def _calc_opportunity(volume: int, fox_pos: int | None, intencao_score: int = 2) -> dict:
     """
     Visitas potenciais: visitas que a Fox GANHARIA ao chegar à posição 1.
-    Se já está em #1, mostra o que já captura.
-    Score de oportunidade: 0–100 (volume × gap de posição).
+    oportunidade_score ponderado pelo score de intenção comercial (1–4).
     """
     ctr_pos1 = _CTR_BY_POSITION[1]
     visitas_pos1 = int(volume * ctr_pos1)
 
     if fox_pos is None:
-        # Fox ausente do Top 10 — oportunidade máxima
         visitas_atuais = 0
         visitas_ganho = visitas_pos1
-        score = min(100, int((volume / 150) * 100))  # normalizado pelo volume máximo esperado
+        base_score = min(100, int((volume / 150) * 100))
     else:
         ctr_atual = _CTR_BY_POSITION.get(fox_pos, 0.01)
         visitas_atuais = int(volume * ctr_atual)
         visitas_ganho = visitas_pos1 - visitas_atuais
-        # Quanto maior o gap de posição e o volume, maior o score
-        gap_factor = (fox_pos - 1) / 9  # 0 se pos=1, 1 se pos=10
-        score = min(100, int(gap_factor * (volume / 150) * 100))
+        gap_factor = (fox_pos - 1) / 9
+        base_score = min(100, int(gap_factor * (volume / 150) * 100))
+
+    # Peso de intenção: COMPRA(4)=×1.5, SERVIÇO(3)=×1.2, LOCAL(2)=×1.0, INFO(1)=×0.6
+    peso = {4: 1.5, 3: 1.2, 2: 1.0, 1: 0.6}.get(intencao_score, 1.0)
+    score_ponderado = min(100, int(base_score * peso))
 
     return {
         "volume_mensal_est": volume,
         "visitas_atuais_est": visitas_atuais,
         "visitas_potenciais_pos1": visitas_pos1,
         "visitas_ganho_est": max(0, visitas_ganho),
-        "oportunidade_score": score,
+        "oportunidade_score": score_ponderado,
     }
+
+
+# ── Classificação de intenção comercial ───────────────────────────────────────
+# Intenção COMPRA: busca de produto específico para adquirir
+_TERMOS_COMPRA = {
+    "comprar", "preço", "valor", "quanto custa", "promoção", "oferta",
+    "pneu novo", "pneus novos", "pneu usado", "jogo de pneu",
+}
+# Padrão de medida de pneu (ex: "175/70 r14", "295/80 r22.5")
+import re as _re
+_REGEX_MEDIDA_PNEU = _re.compile(r'\d{3}/\d{2}\s*r\d{2}', _re.IGNORECASE)
+
+# Intenção SERVIÇO: busca de execução de um serviço automotivo
+_TERMOS_SERVICO = {
+    "alinhamento", "balanceamento", "geometria", "suspensão", "amortecedor",
+    "freio", "freios", "troca de óleo", "filtro", "injeção", "scanner",
+    "arrefecimento", "ar condicionado", "câmbio", "bateria", "baterias",
+    "recapagem", "reforma", "vulcanização",
+}
+
+# Intenção LOCAL: busca com geo-modificador explícito (já tem cidade no texto)
+_TERMOS_LOCAL = {"perto de mim", "próximo", "próxima", "mais perto", "aqui perto"}
+
+# Intenção INFORMACIONAL: busca de aprendizado / dúvida
+_TERMOS_INFO = {
+    "o que é", "como funciona", "quando trocar", "como trocar", "dicas",
+    "tutorial", "diferença entre", "qual melhor", "é normal",
+}
+
+# Score de conversão por intenção (quanto mais alto, maior chance de virar cliente)
+_CONVERSAO_SCORE = {
+    "COMPRA":        4,  # fundo de funil — pessoa pronta para comprar
+    "SERVIÇO":       3,  # meio/fundo — precisa do serviço, buscando fornecedor
+    "LOCAL":         2,  # meio — procura onde ir, ainda comparando
+    "INFORMACIONAL": 1,  # topo — aprendendo, não decide agora
+}
+
+
+def _classificar_intencao(query: str, servico: dict) -> tuple[str, int]:
+    """
+    Retorna (intencao: str, score_conversao: int).
+    Prioridade de classificação: COMPRA > SERVIÇO > LOCAL > INFORMACIONAL.
+    """
+    q = query.lower()
+    linha = str(servico.get("linha", servico.get("linhas", "")))
+
+    # COMPRA: medida de pneu ou termos de compra explícitos
+    if _REGEX_MEDIDA_PNEU.search(q) or any(t in q for t in _TERMOS_COMPRA):
+        return "COMPRA", _CONVERSAO_SCORE["COMPRA"]
+
+    # INFORMACIONAL: sinais de aprendizado
+    if any(t in q for t in _TERMOS_INFO):
+        return "INFORMACIONAL", _CONVERSAO_SCORE["INFORMACIONAL"]
+
+    # SERVIÇO: nome de serviço automotivo reconhecível
+    if any(t in q for t in _TERMOS_SERVICO):
+        return "SERVIÇO", _CONVERSAO_SCORE["SERVIÇO"]
+
+    # LOCAL: geo-modificador sem serviço identificado
+    if any(t in q for t in _TERMOS_LOCAL) or " em " in q:
+        return "LOCAL", _CONVERSAO_SCORE["LOCAL"]
+
+    # Fallback: se for linha caminhão, provavelmente serviço B2B
+    if "caminhao" in linha.lower() or "caminhões" in linha.lower():
+        return "SERVIÇO", _CONVERSAO_SCORE["SERVIÇO"]
+
+    return "LOCAL", _CONVERSAO_SCORE["LOCAL"]
 
 
 def _parse_result(results: list[dict] | None, query: str, unidade: dict, servico: dict) -> dict:
@@ -396,7 +464,8 @@ def _parse_result(results: list[dict] | None, query: str, unidade: dict, servico
                     concorrentes.append(domain)
 
     volume = _estimate_volume(query, servico, unidade)
-    opp = _calc_opportunity(volume, fox_pos)
+    intencao, intencao_score = _classificar_intencao(query, servico)
+    opp = _calc_opportunity(volume, fox_pos, intencao_score)
 
     return {
         "query": query,
@@ -404,6 +473,8 @@ def _parse_result(results: list[dict] | None, query: str, unidade: dict, servico
         "uf": unidade["uf"],
         "servico": servico["nome"],
         "linha": servico.get("linha", ""),
+        "intencao": intencao,
+        "score_conversao": intencao_score,
         "posicao_fox": fox_pos,
         "concorrente_1": concorrentes[0] if len(concorrentes) > 0 else None,
         "concorrente_2": concorrentes[1] if len(concorrentes) > 1 else None,
