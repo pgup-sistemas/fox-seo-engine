@@ -1,21 +1,21 @@
 # Relatório Executivo — Rede Fox SEO Engine
-**Gerado em:** 23/11/2026 17:10
+**Gerado em:** 26/11/2026 13:39
 
 ## Resumo de KPIs
 - Páginas mapeadas: 160
 - Cobertura local: 0.0%
 - Landing pages recomendadas: 101
-- Páginas sem Schema.org: 147
+- Páginas sem Schema.org: 148
 
 ## Status dos Módulos
 | Módulo | Status | Duração |
 |---|---|---|
-| crawler_site | ✅ OK | 0:00:21 |
+| crawler_site | ✅ OK | 0:00:24 |
 | gsc_auditor | ✅ OK | 0:00:00 |
-| serp_scanner | ✅ OK | 0:00:43 |
-| core_web_vitals | ✅ OK | 0:01:20 |
+| serp_scanner | ✅ OK | 0:00:26 |
+| core_web_vitals | ✅ OK | 0:01:32 |
 | gap_analyzer | ✅ OK | 0:00:00 |
-| reviews_monitor | ✅ OK | 0:00:02 |
+| reviews_monitor | ✅ OK | 0:00:03 |
 | indexing_pusher | ✅ OK | 0:00:00 |
 | dashboard_builder | ✅ OK | 0:00:00 |
 
