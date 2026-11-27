@@ -26,6 +26,7 @@ from src import (
     gap_analyzer,
     reviews_monitor,
     indexing_pusher,
+    catalogo_insights,
     dashboard_builder,
 )
 
@@ -130,6 +131,7 @@ def main():
         ("gap_analyzer",      gap_analyzer.run,       120),
         ("reviews_monitor",   reviews_monitor.run,    120),
         ("indexing_pusher",   indexing_pusher.run,    120),
+        ("catalogo_insights", catalogo_insights.run,   60),
         ("dashboard_builder", dashboard_builder.run,  120),
     ]
 

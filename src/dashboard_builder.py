@@ -310,6 +310,29 @@ TEMPLATE = """<!DOCTYPE html>
   <div id="chart-oportunidade">{% if not disponivel.serp %}{{ empty_state('Dados SERP indisponíveis.','Configure ao menos uma chave de busca para visualizar as oportunidades de tráfego.') }}{% endif %}</div>
 </div>
 
+<!-- Catálogo × Google Gap -->
+<div class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-1">
+    <h3 class="text-sm font-semibold" style="color:var(--text)">
+      🛞 Catálogo × Google — Medidas Procuradas Sem Presença no Google
+    </h3>
+    <span class="text-xs px-2 py-0.5 rounded-full font-medium" style="background:var(--accent-soft);color:var(--fox-red)">foxsitechat</span>
+  </div>
+  <p class="text-xs mb-3" style="color:var(--muted);opacity:.7">
+    Medidas que clientes buscam no catálogo digital mas a Fox não aparece no Google para essas buscas nas mesmas cidades.
+    <span style="color:#e31b23">■</span> GAP — ausente no Google &nbsp;
+    <span style="color:#22c55e">■</span> OK — presente no Top 10.
+  </p>
+  {% if catalogo_insights and catalogo_insights.prioridade_critica is defined %}
+  <div class="flex gap-4 mb-3 flex-wrap">
+    <div class="text-xs" style="color:var(--muted)">Cruzamentos: <strong style="color:var(--text)">{{ catalogo_insights.total_cruzamentos }}</strong></div>
+    <div class="text-xs" style="color:var(--muted)">GAPs identificados: <strong style="color:#e31b23">{{ catalogo_insights.gaps_google }}</strong></div>
+    <div class="text-xs" style="color:var(--muted)">Prioridade CRÍTICA: <strong style="color:#f97316">{{ catalogo_insights.prioridade_critica }}</strong></div>
+  </div>
+  {% endif %}
+  <div id="chart-catalogo-gaps">{% if not disponivel.catalogo %}{{ empty_state('Catálogo Insights indisponível.','O endpoint /api/top-buscas-por-cidade precisa de buscas registradas no catálogo para gerar este gráfico.') }}{% endif %}</div>
+</div>
+
 <!-- Gráficos linha 3 -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
   <div class="card p-4">
@@ -424,6 +447,7 @@ renderChart('chart-intencao', CHARTS.intencao);
 renderChart('chart-intencao-top', CHARTS.intencao_top);
 renderChart('chart-concorrentes', CHARTS.concorrentes);
 renderChart('chart-oportunidade', CHARTS.oportunidade);
+renderChart('chart-catalogo-gaps', CHARTS.catalogo_gaps);
 renderChart('chart-historico', CHARTS.historico);
 renderChart('chart-vitals', CHARTS.vitals);
 renderChart('chart-sov-cidade', CHARTS.sov_cidade);
@@ -520,7 +544,7 @@ function applyTheme(theme) {
   const fontColor = isLight ? '#0f172a' : '#e6eaf0';
   const plotUpdate = { paper_bgcolor: paperBg, plot_bgcolor: bg, font: { color: fontColor } };
   ['chart-cobertura','chart-saude','chart-intencao','chart-intencao-top',
-   'chart-concorrentes','chart-oportunidade','chart-historico',
+   'chart-concorrentes','chart-oportunidade','chart-catalogo-gaps','chart-historico',
    'chart-vitals','chart-sov-cidade','chart-sov','chart-reviews'].forEach(id => {
     const el = document.getElementById(id);
     if (el && el._fullLayout) Plotly.relayout(id, plotUpdate);
@@ -1478,6 +1502,44 @@ def _build_page_schemas(df_audit):
     return article_data, product_data, service_data
 
 
+def _chart_catalogo_gaps(df_cat: pd.DataFrame | None) -> str | None:
+    """Barras horizontais: medidas mais buscadas no catálogo × gap no Google."""
+    if df_cat is None or df_cat.empty:
+        return None
+    try:
+        df = df_cat.copy()
+        if "buscas_catalogo" not in df.columns:
+            return None
+        df = df.sort_values("buscas_catalogo", ascending=False).head(15)
+        cores = df["gap_google"].map(
+            lambda g: "#e31b23" if g else "#22c55e"
+        ).tolist() if "gap_google" in df.columns else ["#e31b23"] * len(df)
+        labels = (df["medida"] + " — " + df["cidade"]).tolist()
+        fig = go.Figure(go.Bar(
+            x=df["buscas_catalogo"].tolist(),
+            y=labels,
+            orientation="h",
+            marker_color=cores,
+            text=df.get("prioridade", pd.Series([""] * len(df))).tolist(),
+            textposition="inside",
+            hovertemplate="%{y}<br>Buscas no catálogo: %{x}<extra></extra>",
+        ))
+        fig.update_layout(
+            title="Medidas mais buscadas no catálogo × presença no Google",
+            xaxis_title="Buscas (últimos 30 dias)",
+            yaxis=dict(autorange="reversed"),
+            height=max(300, len(df) * 32),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#e6eaf0"),
+            margin=dict(l=20, r=20, t=40, b=20),
+        )
+        return fig.to_json()
+    except Exception as e:
+        logger.warning("Erro ao gerar chart_catalogo_gaps: %s", e)
+        return None
+
+
 def run():
     logger.info("Iniciando Dashboard Builder...")
 
@@ -1488,6 +1550,7 @@ def run():
     df_vitals = _safe_load_csv("output/6_core_web_vitals.csv")
     df_reviews = _safe_load_csv("output/7_reviews_monitor.csv")
     df_hist = _safe_load_csv("output/historico_evolucao.csv")
+    df_cat = _safe_load_csv("output/8_catalogo_vs_serp.csv")
 
     # Alertas de concorrência
     alertas_concorrencia = None
@@ -1505,6 +1568,7 @@ def run():
         "expansao": df_expansion is not None,
         "vitals": df_vitals is not None,
         "reviews": df_reviews is not None,
+        "catalogo": df_cat is not None,
     }
 
     alertas = []
@@ -1557,6 +1621,7 @@ def run():
         "sov": _chart_sov(df_hist, sov),
         "sov_cidade": _chart_sov_cidade(df_serp),
         "reviews": _chart_reviews(df_reviews),
+        "catalogo_gaps": _chart_catalogo_gaps(df_cat),
     }
 
     expansion_data = df_expansion.to_dict(orient="records") if df_expansion is not None else []
@@ -1578,6 +1643,17 @@ def run():
 
     article_data, product_data, service_data = _build_page_schemas(df_audit)
 
+    # Catalogo insights JSON
+    catalogo_insights_data = {}
+    _cat_json = Path("output/8_catalogo_insights.json")
+    if _cat_json.exists():
+        try:
+            catalogo_insights_data = json.loads(_cat_json.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
+    catalogo_gaps_data = df_cat.to_dict(orient="records") if df_cat is not None else []
+
     template = Template(TEMPLATE)
     html = template.render(
         gerado_em=datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -1593,6 +1669,8 @@ def run():
         reviews_disponivel=disponivel["reviews"],
         disponivel=disponivel,
         alertas_concorrencia=alertas_concorrencia,
+        catalogo_insights=catalogo_insights_data,
+        catalogo_gaps_data=catalogo_gaps_data,
     )
 
     Path("docs").mkdir(exist_ok=True)
